@@ -2,6 +2,7 @@ class SudokuGenerator {
   constructor() {
     // Initialize empty 9x9 grid
     this.grid = Array(9).fill().map(() => Array(9).fill(0));
+    this.solver = new SudokuSolver(this.grid);
     this.solution = Array(9).fill().map(() => Array(9).fill(0));
   }
 
@@ -16,7 +17,6 @@ class SudokuGenerator {
     
     // Copy the solution
     this.solution = this.grid.map(row => [...row]);
-    
     // Remove numbers based on difficulty
     this.removeNumbers(difficulty);
     
@@ -26,6 +26,7 @@ class SudokuGenerator {
   // Fills the grid with a valid Sudoku solution
   fillGrid() {
     this.grid = Array(9).fill().map(() => Array(9).fill(0));
+    this.solver.grid = this.grid;
     this.fillCell(0, 0);
   }
 
@@ -53,7 +54,7 @@ class SudokuGenerator {
     for (let i = 0; i < 9; i++) {
       const num = numbers[i];
       
-      if (this.isValid(row, col, num)) {
+      if (this.solver.isValidPlacement(row, col, num)) {
         this.grid[row][col] = num;
         
         if (this.fillCell(nextRow, nextCol)) {
@@ -67,38 +68,6 @@ class SudokuGenerator {
     
     return false;
   }
-
-  // Checks if a number is valid at a position
-  isValid(row, col, num) {
-    // Check row
-    for (let c = 0; c < 9; c++) {
-      if (this.grid[row][c] === num) {
-        return false;
-      }
-    }
-    
-    // Check column
-    for (let r = 0; r < 9; r++) {
-      if (this.grid[r][col] === num) {
-        return false;
-      }
-    }
-    
-    // Check 3x3 block
-    const blockRow = Math.floor(row / 3) * 3;
-    const blockCol = Math.floor(col / 3) * 3;
-    
-    for (let r = 0; r < 3; r++) {
-      for (let c = 0; c < 3; c++) {
-        if (this.grid[blockRow + r][blockCol + c] === num) {
-          return false;
-        }
-      }
-    }
-    
-    return true;
-  }
-
   
   // Removes numbers from the grid based on difficulty
   removeNumbers(difficulty) {
@@ -346,6 +315,3 @@ function createSudoku(difficulty) {
 export function generateSudoku(difficulty = "medium"){
   return createSudoku(difficulty)
 }
-
-// Example call
-createSudoku();

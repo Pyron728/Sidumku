@@ -2,5 +2,6 @@
   "dependencies": {
     "@seald-io/nedb": "^4.0.4",
     "http-server": "^14.1.1"
-  }
+  },
+  "type": "module"
 }
