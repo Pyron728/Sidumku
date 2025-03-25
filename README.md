@@ -50,3 +50,16 @@ Available on:
   http://localhost:8080
 ```
 - Öffne nun [http://localhost:8080](http://localhost:8080) im Browser
+
+### 4. Backend starten
+-  gehe im Terminal auf die \sidumku\src Ebene.
+
+-  Starte den Server mit:
+```sh
+node server.js
+```
+- Nach dem Start erscheint eine Ausgabe wie:
+```
+nicoamann@Nico-MacBookAir src % node server.js
+✅ Server läuft auf: http://localhost:3000
+```
