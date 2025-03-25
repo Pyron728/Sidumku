@@ -52,7 +52,7 @@ Available on:
 - Öffne nun [http://localhost:8080](http://localhost:8080) im Browser
 
 ### 4. Backend starten
--  gehe im Terminal auf die \sidumku\src Ebene.
+-  gehe im Terminal auf die `\sidumku\src` Ebene.
 
 -  Starte den Server mit:
 ```sh
@@ -62,4 +62,11 @@ node server.js
 ```
 nicoamann@Nico-MacBookAir src % node server.js
 ✅ Server läuft auf: http://localhost:3000
+```
+
+- Backend kann nun über UI oder Insomnia getestet werden
+- In der IDE erscheint `user.db`, in der die Daten lokal gespeichert werden
+- Falls die Datebank gelöscht werden sollte:
+```sh
+rm user.db
 ```
