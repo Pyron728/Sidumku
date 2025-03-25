@@ -66,7 +66,7 @@ nicoamann@Nico-MacBookAir src % node server.js
 
 - Backend kann nun über UI oder Insomnia getestet werden
 - In der IDE erscheint `user.db`, in der die Daten lokal gespeichert werden
-- Falls die Datebank gelöscht werden sollt:
+- Falls die Datebank gelöscht werden soll:
 ```sh
 rm user.db
 ```
