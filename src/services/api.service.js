@@ -1,9 +1,9 @@
 export class ApiService {
-    async apiRequest(url, body = undefined, method = 'GET', email = localStorage.getItem('email'), password = localStorage.getItem('password')) {
+    async apiRequest(url, body = undefined, method = 'GET', email = localStorage.getItem('username'), password = localStorage.getItem('password')) {
         const options = { method };
         options.headers = {
           'Content-Type': 'application/json',
-          'authorization': 'Basic ' + btoa(`${email}:${password}`),
+          'authorization': 'Basic ' + btoa(`${username}:${password}`),
         };
     
         if (body) {
@@ -24,12 +24,12 @@ export class ApiService {
         throw new Error(errorText);
       }
 
-      async createUser(email, username, password) {
-        return await this.apiRequest('users', { email, username, password }, 'POST');
+      async createUser(username, password) {
+        return await this.apiRequest('users', { username, password }, 'POST');
       }
 
-      async authenticateUser(email, password) {
-        return await this.apiRequest('users', undefined, 'GET', email, password);
+      async authenticateUser(username, password) {
+        return await this.apiRequest('users', undefined, 'GET', username, password);
       }
 
       async getUser(userId) {

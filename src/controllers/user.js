@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, queryUsers } from '../models/user.js';
+import { createUser, deleteUser, queryUsers } from '../models/user.js';
 
 const router = express.Router();
 
@@ -20,10 +20,10 @@ export async function validateUser(req, res, next) {
     if (!b64auth) {
         return res.status(401).send('Authorization required');
     }
-    let [email, password] = atob(b64auth).split(':');
-    const user = (await queryUsers()).filter(user => user.email === email)[0];
+    let [username, password] = atob(b64auth).split(':');
+    const user = (await queryUsers()).filter(user => user.username === username)[0];
     if (!user || user.password !== password) {
-        return res.status(401).send('E-mail / Password mismatch');
+        return res.status(401).send('Username / Password mismatch');
     }
     res.status(202);
     req.body.user = user;
@@ -45,23 +45,32 @@ router.get('/:userId', async (req, res) => {
 });
 
 router.post('/', validateInput, async (req, res) => {
-    console.log('Creating user:');
-
-    if ((await queryUsers()).filter(user => user.email === req.body.email).length > 0) {
+    if ((await queryUsers()).filter(user => user.username === req.body.username).length > 0) {
         res.status(409);
-        return res.json({message: 'E-Mail already exists'});
-    } else if (!req.body.email) {
+        return res.json({message: 'User with this name already exists'});
+    } else if (!req.body.username) {
         res.status(400);
-        return res.json({message: 'E-Mail missing'});
+        return res.json({message: 'Username missing'});
     }
 
-    const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
 
-    const user = await createUser(email, username, password);
+    const user = await createUser(username, password);
 
     res.status(201).json(user);
+});
+
+router.delete('/:userId', validateUser, async (req, res) => {
+    const userId = req.params.userId;
+    const user = (await queryUsers()).filter(user => user._id === userId)[0];
+    if (!user) {
+        res.status(404);
+        return res.json({message: 'User not found'});
+    }
+
+    await deleteUser(userId);
+    res.status(204).send();
 });
 
 export default router;
