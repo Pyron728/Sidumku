@@ -18,39 +18,38 @@ class SudokuScene extends Phaser.Scene {
     }
 
     create() {
-        const puzzle = generateSudoku('medium');  // You can change difficulty here
+        const puzzle = generateSudoku('medium');
         this.board = puzzle.currentBoard;
-
         this.createGrid();
         this.createUI();
     }
 
     createGrid() {
-        const gridX = (this.scale.width - (9 * this.cellSize + 4 * 4)) / 2; // Adding extra padding for thick lines
+        const gridX = (this.scale.width - (9 * this.cellSize + 4 * 4)) / 2;
         const gridY = (this.scale.height - (9 * this.cellSize + 4 * 4)) / 2;
 
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 const cell = this.board[row][col];
 
-                // Add extra spacing for subgrid separators
-                const extraX = Math.floor(col / 3) * 4; // Extra space after every 3 columns
-                const extraY = Math.floor(row / 3) * 4; // Extra space after every 3 rows
+                const extraX = Math.floor(col / 3) * 4;
+                const extraY = Math.floor(row / 3) * 4;
 
                 const x = gridX + col * this.cellSize + extraX;
                 const y = gridY + row * this.cellSize + extraY;
 
                 const cellRect = this.add.rectangle(x, y, this.cellSize, this.cellSize, 0xCCCCCC);
-                cellRect.setStrokeStyle(2, 0x000000); // Normal cell border
+                cellRect.setStrokeStyle(2, 0x000000);
                 cellRect.setInteractive();
 
                 cellRect.on('pointerover', () => cellRect.setAlpha(0.5));
                 cellRect.on('pointerout', () => cellRect.setAlpha(1));
                 cellRect.on('pointerdown', () => {
-                    if (cell.value === null) {
-                        this.selectedCell = { row, col };
-                    }
+                    this.selectedCell = { row, col };
+                    this.highlightSelection(row, col);
                 });
+
+
 
                 const text = this.add.text(x, y, cell.value ? cell.value.toString() : '', {
                     fontSize: '24px',
@@ -73,7 +72,7 @@ class SudokuScene extends Phaser.Scene {
             ['7', '8', '9']
         ];
 
-        this.numberPadX = this.gridX + 9 * this.cellSize + 40; // Adjusted for new grid width
+        this.numberPadX = this.gridX + 9 * this.cellSize + 40;
         this.numberPadY = this.gridY + (9 * this.cellSize - (3 * (this.cellSize + 10))) / 2;
 
         numbers.forEach((row, rowIndex) => {
@@ -89,7 +88,6 @@ class SudokuScene extends Phaser.Scene {
                     borderRadius: 5
                 }).setOrigin(0.5).setInteractive();
 
-                // Darken on hover
                 numberButton.on('pointerover', () => {
                     numberButton.setStyle({ backgroundColor: '#AAA' });
                 });
@@ -122,8 +120,34 @@ class SudokuScene extends Phaser.Scene {
         });
     }
 
+    highlightSelection(row, col) {
+        const selectedValue = this.board[row][col].value;
+        
+        this.grid.forEach(({ cellRect }) => {
+            cellRect.setFillStyle(0xCCCCCC);
+        });
+
+        this.grid.forEach(({ cellRect, cell }, index) => {
+            const gridRow = Math.floor(index / 9);
+            const gridCol = index % 9;
+
+            if (gridRow === row || gridCol === col) {
+                cellRect.setFillStyle(0x999999);
+            }
+
+            if (cell.value !== null && cell.value === selectedValue) {
+                cellRect.setFillStyle(0xBBBB44);
+            }
+        });
+
+        const selectedCell = this.grid[row * 9 + col];
+        selectedCell.cellRect.setFillStyle(0xBBBB44)
+        this.selectedCell = { row, col };
+    }
+
+
     update() {
-        // You can add any dynamic updates here (like checking for solved state)
+        // ???
     }
 }
 
