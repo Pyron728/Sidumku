@@ -20,8 +20,15 @@ class SudokuScene extends Phaser.Scene {
     create() {
         const puzzle = generateSudoku('medium');
         this.board = puzzle.currentBoard;
+        this.solution = puzzle.solvedBoard;
         this.createGrid();
         this.createUI();
+        this.input.keyboard.on('keydown', (event) => {
+            if (this.selectedCell != null && /^[1-9]$/.test(event.key)) {
+                const { row, col } = this.selectedCell; 
+                this.insertNumber(row, col, parseInt(event.key));
+            }
+        });
     }
 
     createGrid() {
@@ -120,6 +127,20 @@ class SudokuScene extends Phaser.Scene {
         });
     }
 
+    insertNumber(row, col, number) {
+        if (!this.board[row][col].isGiven) {
+            if (this.solution[row][col].value === number) {
+                this.board[row][col].value = number;
+                this.updateGrid();
+                this.saveSudoku();
+                this.highlightSelection(row, col);
+            }
+            else {
+                console.log("Wrong Number");
+                // Errorhandling (part of another Userstory)
+            }
+        }
+    }
     highlightSelection(row, col) {
         const selectedValue = this.board[row][col].value;
         
