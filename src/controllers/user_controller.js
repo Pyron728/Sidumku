@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, deleteUser, queryUsers } from '../models/user.js';
+import { createUser, deleteUser, queryUsers } from '../models/user_model.js';
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ async function validateInput(req, res, next) {
     }
 }
 
-export async function validateUser(req, res, next) {
+export async function authorizeUser(req, res, next) {
     const b64auth = req.headers.authorization?.split(' ')[1];
     if (!b64auth) {
         return res.status(401).send('Authorization required');
@@ -30,7 +30,7 @@ export async function validateUser(req, res, next) {
     next();
 }
 
-router.get('/', validateUser, async (req, res) => {
+router.get('/', authorizeUser, async (req, res) => {
     res.json(req.body.user);
 });
 
@@ -61,7 +61,7 @@ router.post('/', validateInput, async (req, res) => {
     res.status(201).json(user);
 });
 
-router.delete('/:userId', validateUser, async (req, res) => {
+router.delete('/:userId', authorizeUser, async (req, res) => {
     const userId = req.params.userId;
     const user = (await queryUsers()).filter(user => user._id === userId)[0];
     if (!user) {
