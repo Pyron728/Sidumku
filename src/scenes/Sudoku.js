@@ -14,9 +14,9 @@ class SudokuScene extends Phaser.Scene {
         // Updated colors based on the provided palette
         this.primaryColor = 0xFFFAED;      // Background color
         this.secondaryColor = 0xFAEDD6;    // Buttons, nav bar, cross line when clicking on a number
-        this.tertiaryColor = 0xDACDAA;     // Borders, thin grid lines, hover states, separations
+        this.tertiaryColor = 0xDACDAA;     // Borders, hover states, separations
         this.textColor = 0x32383C;         // Text, icons, thick grid lines
-        this.accentColor = 0xA6A197;       // Currently entered number
+        this.accentColor = 0xA6A197;       
         this.highlightColor = 0xF6D4D2;    // Hints, highlighting same numbers
 
         // Specialized highlight colors
@@ -24,6 +24,7 @@ class SudokuScene extends Phaser.Scene {
         this.highlightSameRowAndLine = this.tertiaryColor;
         this.cellBackgroundColor = this.primaryColor;
         this.strokeColor = this.textColor;
+        this.newNumberColor =  'blue' 
     }
 
     preload() {
@@ -83,12 +84,12 @@ class SudokuScene extends Phaser.Scene {
                     this.highlightSelection(row, col);
                 });
 
-                const textColor = cell.isGiven ? this.textColor : this.accentColor;
+                const textColor = cell.isGiven ? this.textColor : this.newNumberColor;
                 
                 const text = this.add.text(x, y, cell.value ? cell.value.toString() : '', {
                     fontSize: '24px',
-                    color: textColor,
-                    fontStyle: cell.isGiven ? 'bold' : 'normal'
+                    color: cell.isGiven ? textColor: this.newNumberColor,
+                    fontStyle: 'bold'
                 }).setOrigin(0.5);
 
                 this.grid.push({ cellRect, text, cell, row, col });
@@ -110,73 +111,57 @@ class SudokuScene extends Phaser.Scene {
         this.numberPadY = this.gridY + (9 * this.cellSize - (3 * (this.cellSize + 10))) / 2;
 
         numbers.forEach((row, rowIndex) => {
-    row.forEach((button, colIndex) => {
-        const x = this.numberPadX + colIndex * (this.cellSize + 10);
-        const y = this.numberPadY + rowIndex * (this.cellSize + 10);
-        const radius = 10; // corner radius for rounded edges
+            row.forEach((button, colIndex) => {
+                const x = this.numberPadX + colIndex * (this.cellSize + 10);
+                const y = this.numberPadY + rowIndex * (this.cellSize + 10);
+                const radius = 10;
 
-        const buttonBg = this.add.graphics();
-        buttonBg.fillStyle(this.secondaryColor, 1);
-        buttonBg.lineStyle(2, this.tertiaryColor);
-        buttonBg.fillRoundedRect(
-            x - this.cellSize / 2,
-            y - this.cellSize / 2,
-            this.cellSize,
-            this.cellSize,
-            radius
-        );
-        buttonBg.strokeRoundedRect(
-            x - this.cellSize / 2,
-            y - this.cellSize / 2,
-            this.cellSize,
-            this.cellSize,
-            radius
-        );
+                const buttonBg = this.add.graphics();
+                buttonBg.x = x;
+                buttonBg.y = y;
 
-        const hitArea = new Phaser.Geom.Rectangle(
-            x - this.cellSize / 2,
-            y - this.cellSize / 2,
-            this.cellSize,
-            this.cellSize
-        );
-        buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
+                const drawButton = (fillColor) => {
+                    buttonBg.clear();
+                    buttonBg.fillStyle(fillColor, 1);
+                    buttonBg.lineStyle(2, this.tertiaryColor);
+                    buttonBg.fillRoundedRect(-this.cellSize / 2, -this.cellSize / 2, this.cellSize, this.cellSize, radius);
+                    buttonBg.strokeRoundedRect(-this.cellSize / 2, -this.cellSize / 2, this.cellSize, this.cellSize, radius);
+                };
 
-        this.add.text(x, y, button, {
-            fontSize: '32px',
-            color: this.textColor,
-        }).setOrigin(0.5);
+                drawButton(this.secondaryColor);
 
-        buttonBg.on('pointerover', () => {
-            buttonBg.clear();
-            buttonBg.fillStyle(this.tertiaryColor, 1);
-            buttonBg.lineStyle(2, this.tertiaryColor);
-            buttonBg.fillRoundedRect(x - this.cellSize / 2, y - this.cellSize / 2, this.cellSize, this.cellSize, radius);
-            buttonBg.strokeRoundedRect(x - this.cellSize / 2, y - this.cellSize / 2, this.cellSize, this.cellSize, radius);
+                const hitArea = new Phaser.Geom.Rectangle(
+                    -this.cellSize / 2,
+                    -this.cellSize / 2,
+                    this.cellSize,
+                    this.cellSize
+                );
+                buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
+
+                this.add.text(x, y, button, {
+                    fontFamily: 'Bold', 
+                    fontSize: '32px',
+                    color: this.textColor,
+                }).setOrigin(0.5);
+
+                buttonBg.on('pointerover', () => drawButton(this.tertiaryColor));
+                buttonBg.on('pointerout', () => drawButton(this.secondaryColor));
+
+                buttonBg.on('pointerdown', () => {
+                    if (this.selectedCell) {
+                        const { row, col } = this.selectedCell;
+                        this.insertNumber(row, col, parseInt(button));
+                    }
+                });
+            });
         });
-
-        buttonBg.on('pointerout', () => {
-            buttonBg.clear();
-            buttonBg.fillStyle(this.secondaryColor, 1);
-            buttonBg.lineStyle(2, this.tertiaryColor);
-            buttonBg.fillRoundedRect(x - this.cellSize / 2, y - this.cellSize / 2, this.cellSize, this.cellSize, radius);
-            buttonBg.strokeRoundedRect(x - this.cellSize / 2, y - this.cellSize / 2, this.cellSize, this.cellSize, radius);
-        });
-
-        buttonBg.on('pointerdown', () => {
-            if (this.selectedCell) {
-                const { row, col } = this.selectedCell;
-                this.insertNumber(row, col, parseInt(button));
-            }
-        });
-    });
-});
-
     }
+
     updateGrid() {
         this.grid.forEach(({ cellRect, text, cell }) => {
             if (cell.value !== null) {
                 text.setText(cell.value.toString());
-                const textColor = cell.isGiven ? this.textColor : this.accentColor;
+                const textColor = cell.isGiven ? this.textColor : this.newNumberColor;
                 text.setColor(textColor);
             } else {
                 text.setText('');
@@ -220,6 +205,10 @@ class SudokuScene extends Phaser.Scene {
 
             if (cell.value !== null && cell.value === selectedValue) {
                 cellRect.setFillStyle(this.highlightColor);
+            }
+
+            if(Math.floor(row / 3) === Math.floor(gridRow / 3) && Math.floor(col / 3) === Math.floor(gridCol / 3)) {
+                cellRect.setFillStyle(this.tertiaryColor);
             }
         });
 
