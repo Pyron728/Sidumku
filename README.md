@@ -35,6 +35,7 @@ npm install
 - Registrier dich bei Phaser und logge dich damit ein
 - Gehe auf der Startpage rechts auf Projects und importiere das vorher geklonte Projekt 
 - Öffne das Projekt und klicke oben auf das Play-Symbol 
+- Falls die Szene konstant neulädt, versuche das Game ohne den Phaser Launcher in 3.2 beschrieben zu starten.
 
 #### 3.2 Ohne dem Phaser Launcher starten:
 - Phaser benötigt einen Webserver, da moderne Browser `file://`-Zugriffe oft blockieren. Dies macht der Phaser Launcher automatisch. Wir nutzen das npm package `http-server`. 
@@ -50,6 +51,7 @@ Available on:
   http://localhost:8080
 ```
 - Öffne nun [http://localhost:8080](http://localhost:8080) im Browser
+- Falls du Änderungen im Code vornimmst, drücke Strg + F5 im Browser, um einen force reload zu machen.
 
 ### 4. Backend starten
 -  gehe im Terminal auf die `\sidumku\src` Ebene.
