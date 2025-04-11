@@ -1,5 +1,5 @@
 export class ApiService {
-    async apiRequest(url, body = undefined, method = 'GET', email = localStorage.getItem('username'), password = localStorage.getItem('password')) {
+    async apiRequest(url, body = undefined, method, username = localStorage.getItem('username'), password = localStorage.getItem('password')) {
         const options = { method };
         options.headers = {
           'Content-Type': 'application/json',
@@ -24,6 +24,7 @@ export class ApiService {
         throw new Error(errorText);
       }
 
+      // User-related API methods
       async createUser(username, password) {
         return await this.apiRequest('users', { username, password }, 'POST');
       }
@@ -34,5 +35,27 @@ export class ApiService {
 
       async getUser(userId) {
         return await this.apiRequest(`users/${userId}`);
+      }
+
+      // Sudoku-related API methods
+      async getAllSudokus() {
+        return await this.apiRequest('sudoku');
+      }
+
+      async getSudokuById(sudokuId) {
+        return await this.apiRequest(`sudoku/${sudokuId}`);
+      }
+
+      async createSudoku(sudokuData) {
+        return await this.apiRequest('sudoku', sudokuData, 'POST');
+      }
+
+      async updateSudoku(sudokuData) {
+        const sudokuId = sudokuData._id
+        return await this.apiRequest(`sudoku/${sudokuId}`, sudokuData, 'PUT');
+      }
+
+      async deleteSudoku(sudokuId) {
+        return await this.apiRequest(`sudoku/${sudokuId}`, undefined, 'DELETE');
       }
 }

@@ -300,14 +300,15 @@ function createSudoku(difficulty) {
   const gameId = 'sudoku_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
 
   const sudokuObject = {
-    id: gameId,
-    currentBoard: currentBoard,
-    solvedBoard: solvedBoard,
+    _id: gameId,
+    playerId: '123456789', //For Test Purposes while we have no user-system
     difficulty: difficulty,
     mistakes: 0,
     hintsUsed: 0,
     solved: false,
-    timeSpent: Date.now()
+    timeSpent: 0,
+    currentBoard: currentBoard,
+    solvedBoard: solvedBoard,
   };
   return sudokuObject;
 }

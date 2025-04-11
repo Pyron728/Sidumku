@@ -1,4 +1,5 @@
 import { generateSudoku } from '../generator/BasicSudokuGenerator.js';
+import { ApiService } from '../services/api.service.js';
 
 class SudokuScene extends Phaser.Scene {
     constructor() {
@@ -32,12 +33,11 @@ class SudokuScene extends Phaser.Scene {
     }
 
     create() {
-        // Set the background color of the entire scene
         this.cameras.main.setBackgroundColor(this.primaryColor);
-        
-        let puzzle = generateSudoku('medium');
-        this.board = puzzle.currentBoard;
-        this.solution = puzzle.solvedBoard;
+        this.apiService = new ApiService();
+        this.puzzle = generateSudoku('medium');
+        this.board = this.puzzle.currentBoard;
+        this.solution = this.puzzle.solvedBoard;
         this.createGrid();
         this.createUI();
         this.input.keyboard.on('keydown', (event) => {
@@ -46,6 +46,7 @@ class SudokuScene extends Phaser.Scene {
                 this.insertNumber(row, col, parseInt(event.key));
             }
         });
+        this.createSudokuInDb(this.puzzle)
     }
 
     createGrid() {
@@ -179,13 +180,25 @@ class SudokuScene extends Phaser.Scene {
             }
             else {
                 console.log("Wrong Number");
-                // Errorhandling (part of another Userstory)
+                // simple Errorhandling (complex errorhandling is part of another Userstory)
+                const cellRect = this.grid.find(c => c.row === row && c.col === col).cellRect;
+                cellRect.setFillStyle(0xff6666);
+                this.time.delayedCall(500, () => {
+                    cellRect.setFillStyle(this.highlightColor);
+                });
             }
         }
     }
 
-    saveSudoku() {
-        console.log(this.board);
+     async saveSudoku() {
+        this.puzzle.currentBoard = this.board;
+        const savedGame = await this.apiService.updateSudoku(this.puzzle);
+        console.log(savedGame ? 'saved Game successfully': ('Error while saving game: ' + savedGame));
+    }
+
+    async createSudokuInDb(sudoku) {
+        const savedGame = await this.apiService.createSudoku(sudoku);
+        console.log(savedGame ? 'Created Game in Database for the first time': ('Error while creating Game in Database for the first time: ' + savedGame));
     }
 
     highlightSelection(row, col) {
@@ -222,7 +235,7 @@ class SudokuScene extends Phaser.Scene {
     }
 
     update() {
-        // ???
+        // Game loop updates if needed
     }
 }
 
