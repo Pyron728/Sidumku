@@ -40,6 +40,7 @@ class SudokuScene extends Phaser.Scene {
         this.solution = this.puzzle.solvedBoard;
         this.createGrid();
         this.createUI();
+        this.createTimer()
         this.input.keyboard.on('keydown', (event) => {
             if (this.selectedCell != null && /^[1-9]$/.test(event.key)) {
                 const { row, col } = this.selectedCell; 
@@ -52,7 +53,7 @@ class SudokuScene extends Phaser.Scene {
     createGrid() {
         const strokeWidth = 2
         const gridX = (this.scale.width - (9 * this.cellSize + 4 * 4)) / 2;
-        const gridY = (this.scale.height - (9 * this.cellSize + 4 * 4)) / 2;
+        const gridY = (this.scale.height - (9 * this.cellSize+ 4 * 4)) / 2 + 30;
 
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
@@ -107,14 +108,20 @@ class SudokuScene extends Phaser.Scene {
             ['4', '5', '6'],
             ['7', '8', '9']
         ];
-
+    
+        const gridHeight = 9 * this.cellSize + 4 * 4;
+        const buttonSpacing = 10;
+        const numpadHeight = 3 * this.cellSize + 2 * buttonSpacing;
+        
         this.numberPadX = this.gridX + 9 * this.cellSize + 40;
-        this.numberPadY = this.gridY + (9 * this.cellSize - (3 * (this.cellSize + 10))) / 2;
-
+        
+        this.numberPadY = this.gridY + gridHeight / 2 - 35 - numpadHeight / 2;
+    
         numbers.forEach((row, rowIndex) => {
             row.forEach((button, colIndex) => {
                 const x = this.numberPadX + colIndex * (this.cellSize + 10);
-                const y = this.numberPadY + rowIndex * (this.cellSize + 10);
+                const y = this.numberPadY + rowIndex * (this.cellSize + 10) + this.cellSize / 2;
+    
                 const radius = 10;
 
                 const buttonBg = this.add.graphics();
@@ -156,6 +163,43 @@ class SudokuScene extends Phaser.Scene {
                 });
             });
         });
+    }
+
+    createTimer(){
+        this.timer = this.add.text(
+            this.scale.width / 2,
+            40,
+            '00:00',
+            {
+                fontSize: '32px',
+                fontFamily: 'Bold',
+                color: this.textColor
+            }
+        ).setOrigin(1, 0.5);
+
+        this.timerEvent = this.time.addEvent({
+            delay: 1000,
+            callback: this.updateTimer,
+            callbackScope: this,
+            loop: true
+        });   
+
+        this.updateTimerDisplay()
+    }
+
+    updateTimer() {
+        this.puzzle.timeSpent++;        
+        this.updateTimerDisplay();
+    }
+
+    updateTimerDisplay() {
+        const totalSeconds = this.puzzle.timeSpent || 0;
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        const formattedMinutes = `${minutes < 10 ? ' ': ''}${minutes.toString()}`;
+        const formattedTime = `${formattedMinutes}:${seconds.toString().padStart(2, '0')}`;
+
+        this.timer.setText(formattedTime);
     }
 
     updateGrid() {
@@ -235,7 +279,7 @@ class SudokuScene extends Phaser.Scene {
     }
 
     update() {
-        // Game loop updates if needed
+        this.updateTimerDisplay()
     }
 }
 
