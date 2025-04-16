@@ -21,11 +21,13 @@ class SudokuScene extends Phaser.Scene {
         this.accentColor = 0xA6A197;       
         this.highlightColor = 0xF6D4D2;    // Hints, highlighting same numbers
 
-        // Specialized highlight colors
-        this.highlightMatchingNumber = this.highlightColor;
-        this.highlightSameRowAndLine = this.tertiaryColor;
-        this.highlightNotesColor = 0xFF8C00
-        this.cellBackgroundColor = this.primaryColor;
+        // Specialized colors
+        this.buttonColor = this.secondaryColor;
+        this.hoverColor = this.tertiaryColor;
+        this.highlightMatchingNumberColor = this.highlightColor;
+        this.highlightSameRowAndLineAndSquareColor = this.tertiaryColor;
+        this.highlightNotesColor = 0xFF8C00;
+        this.basicBackgroundColor = this.primaryColor;
         this.strokeColor = this.textColor;
         this.newNumberColor =  'blue' 
     }
@@ -37,7 +39,7 @@ class SudokuScene extends Phaser.Scene {
     }
 
     create() {
-        this.cameras.main.setBackgroundColor(this.primaryColor);
+        this.cameras.main.setBackgroundColor(this.basicBackgroundColor);
 
         this.apiService = new ApiService();
         this.puzzle = generateSudoku('medium');
@@ -70,20 +72,20 @@ class SudokuScene extends Phaser.Scene {
                 const x = gridX + col * this.cellSize + extraX;
                 const y = gridY + row * this.cellSize + extraY;
 
-                 const cellRect = this.add.rectangle(x, y, this.cellSize, this.cellSize, this.cellBackgroundColor);
+                 const cellRect = this.add.rectangle(x, y, this.cellSize, this.cellSize, this.basicBackgroundColor);
                 cellRect.setStrokeStyle(strokeWidth, this.strokeColor);
                 cellRect.setInteractive();
                 
                 cellRect.on('pointerover', () => {
-                    if(cellRect.fillColor == this.cellBackgroundColor){
+                    if(cellRect.fillColor == this.basicBackgroundColor){
                         cellRect.savedColor = cellRect.fillColor;
-                        cellRect.setFillStyle(this.tertiaryColor);
+                        cellRect.setFillStyle(this.hoverColor);
                     }
                 });
 
                 cellRect.on('pointerout', () => {
                     if(cellRect.fillColor != this.highlightColor)
-                        cellRect.setFillStyle(cellRect.savedColor || this.cellBackgroundColor);
+                        cellRect.setFillStyle(cellRect.savedColor || this.basicBackgroundColor);
                 });
                 
                 cellRect.on('pointerdown', () => {
@@ -137,9 +139,9 @@ class SudokuScene extends Phaser.Scene {
 
         const updatePencilAppearance = (isHovering) => {
             if (this.isNoteMode) {
-                pencilmark.setTintFill(isHovering ? this.textColor : this.tertiaryColor);
+                pencilmark.setTintFill(isHovering ? this.textColor : this.hoverColor);
             } else {
-                pencilmark.setTintFill(isHovering ? this.tertiaryColor : this.textColor);
+                pencilmark.setTintFill(isHovering ? this.hoverColor : this.textColor);
             }
         };
         pencilmark.on('pointerdown', () => {
@@ -167,12 +169,12 @@ class SudokuScene extends Phaser.Scene {
                 const drawButton = (fillColor) => {
                     buttonBg.clear();
                     buttonBg.fillStyle(fillColor, 1);
-                    buttonBg.lineStyle(2, this.tertiaryColor);
+                    buttonBg.lineStyle(2, this.hoverColor);
                     buttonBg.fillRoundedRect(-this.cellSize / 2, -this.cellSize / 2, this.cellSize, this.cellSize, radius);
                     buttonBg.strokeRoundedRect(-this.cellSize / 2, -this.cellSize / 2, this.cellSize, this.cellSize, radius);
                 };
 
-                drawButton(this.secondaryColor);
+                drawButton(this.buttonColor);
 
                 const hitArea = new Phaser.Geom.Rectangle(
                     -this.cellSize / 2,
@@ -188,8 +190,8 @@ class SudokuScene extends Phaser.Scene {
                     color: this.textColor,
                 }).setOrigin(0.5);
 
-                buttonBg.on('pointerover', () => drawButton(this.tertiaryColor));
-                buttonBg.on('pointerout', () => drawButton(this.secondaryColor));
+                buttonBg.on('pointerover', () => drawButton(this.hoverColor));
+                buttonBg.on('pointerout', () => drawButton(this.buttonColor));
 
                 buttonBg.on('pointerdown', () => {
                     if (this.selectedCell) {
@@ -342,7 +344,7 @@ class SudokuScene extends Phaser.Scene {
         
         //Resets all cell backgrounds and note highlights
         this.grid.forEach(({ cellRect, notesText }) => {
-            cellRect.setFillStyle(this.cellBackgroundColor);
+            cellRect.setFillStyle(this.basicBackgroundColor);
             if (notesText) {
                 notesText.forEach(noteText => {
                     if (noteText.borderGraphics) {
@@ -359,17 +361,17 @@ class SudokuScene extends Phaser.Scene {
 
             //Highlight same row and grid
             if (gridRow === row || gridCol === col) {
-                cellRect.setFillStyle(this.tertiaryColor);
+                cellRect.setFillStyle(this.highlightSameRowAndLineAndSquareColor);
             }
 
             //Highlight same numbers in the entire sudoku
             if (cell.value !== null && cell.value === selectedValue) {
-                cellRect.setFillStyle(this.highlightColor);
+                cellRect.setFillStyle(this.highlightMatchingNumberColor);
             }
 
             // Highlight same Sudoku-square
             if(Math.floor(row / 3) === Math.floor(gridRow / 3) && Math.floor(col / 3) === Math.floor(gridCol / 3)) {
-                cellRect.setFillStyle(this.tertiaryColor);
+                cellRect.setFillStyle(this.highlightSameRowAndLineAndSquareColor);
             }
 
             // Highlight notes that match the selected value
