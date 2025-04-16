@@ -6,6 +6,7 @@ class SudokuScene extends Phaser.Scene {
         super({ key: 'SudokuScene' });
         this.board = [];
         this.selectedCell = null;
+        this.isNoteMode = false;
         this.cellSize = 60;
         this.grid = [];
         this.padding = 50;
@@ -23,6 +24,7 @@ class SudokuScene extends Phaser.Scene {
         // Specialized highlight colors
         this.highlightMatchingNumber = this.highlightColor;
         this.highlightSameRowAndLine = this.tertiaryColor;
+        this.highlightNotesColor = 0xFF8C00
         this.cellBackgroundColor = this.primaryColor;
         this.strokeColor = this.textColor;
         this.newNumberColor =  'blue' 
@@ -30,10 +32,13 @@ class SudokuScene extends Phaser.Scene {
 
     preload() {
         // preload für Bilddaten und so shit
+        this.load.image('pencil', 'assets/pencilmark.png');
+
     }
 
     create() {
         this.cameras.main.setBackgroundColor(this.primaryColor);
+
         this.apiService = new ApiService();
         this.puzzle = generateSudoku('medium');
         this.board = this.puzzle.currentBoard;
@@ -94,7 +99,12 @@ class SudokuScene extends Phaser.Scene {
                     fontStyle: 'bold'
                 }).setOrigin(0.5);
 
-                this.grid.push({ cellRect, text, cell, row, col });
+                let notesText = []
+                if (!cell.value) {
+                    notesText = this.createNotesText(cell, cellRect);
+                }
+
+                this.grid.push({ cellRect, text, cell, row, col, notesText });
             }
         }
 
@@ -116,7 +126,33 @@ class SudokuScene extends Phaser.Scene {
         this.numberPadX = this.gridX + 9 * this.cellSize + 40;
         
         this.numberPadY = this.gridY + gridHeight / 2 - 35 - numpadHeight / 2;
-    
+
+        const pencilXPosition = this.numberPadX + this.cellSize + buttonSpacing;
+        const pencilYPosition = this.numberPadY - this.cellSize / 2;
+        const pencilSize = this.cellSize / 1.5;
+        const pencilmark = this.add.sprite(pencilXPosition, pencilYPosition, 'pencil').
+            setDisplaySize(pencilSize, pencilSize).
+            setInteractive().
+            setTintFill(this.textColor);
+
+        const updatePencilAppearance = (isHovering) => {
+            if (this.isNoteMode) {
+                pencilmark.setTintFill(isHovering ? this.textColor : this.tertiaryColor);
+            } else {
+                pencilmark.setTintFill(isHovering ? this.tertiaryColor : this.textColor);
+            }
+        };
+        pencilmark.on('pointerdown', () => {
+            this.isNoteMode = !this.isNoteMode; 
+            updatePencilAppearance(false); 
+        });
+        pencilmark.on('pointerover', () => {
+            updatePencilAppearance(true); 
+        });
+        pencilmark.on('pointerout', () => {
+            updatePencilAppearance(false); 
+        });
+
         numbers.forEach((row, rowIndex) => {
             row.forEach((button, colIndex) => {
                 const x = this.numberPadX + colIndex * (this.cellSize + 10);
@@ -203,34 +239,90 @@ class SudokuScene extends Phaser.Scene {
     }
 
     updateGrid() {
-        this.grid.forEach(({ cellRect, text, cell }) => {
+        this.grid.forEach(({ cellRect, text, cell, row, col, notesText }) => {
             if (cell.value !== null) {
                 text.setText(cell.value.toString());
                 const textColor = cell.isGiven ? this.textColor : this.newNumberColor;
                 text.setColor(textColor);
+
+                if (notesText) {
+                    notesText.forEach(n => n.destroy());
+                }
             } else {
-                text.setText('');
+                text.setText('');    
+                if (notesText) {
+                    notesText.forEach(n => n.destroy());
+                }
+                
+                const notesTexts = this.createNotesText(cell, cellRect);
+                this.grid.find(c => c.row === row && c.col === col).notesText = notesTexts;
             }
         });
     }
 
+    // Creates the Node Text for only visually purposes in the grid
+    createNotesText(cell, cellRect){
+        const cellSize = this.cellSize
+        const notesTexts = [];
+        for (let n = 1; n <= 9; n++) {
+            if (cell.notes.includes(n)) {
+                const x = cellRect.x;
+                const y = cellRect.y;
+
+                const noteX = x - cellSize / 3 + ((n - 1) % 3) * cellSize / 3;
+                const noteY = y - cellSize / 3 + Math.floor((n - 1) / 3) * cellSize / 3;
+
+                const noteText = this.add.text(noteX, noteY, n.toString(), {
+                    fontSize: '12px',
+                    color: this.textColor,
+                    align: 'center'
+                }).setOrigin(0.5);
+
+                notesTexts.push(noteText);
+            }
+        }
+        return notesTexts;
+    }
+
     insertNumber(row, col, number) {
         if (!this.board[row][col].isGiven) {
-            if (this.solution[row][col].value === number) {
-                this.board[row][col].value = number;
-                this.updateGrid();
-                this.saveSudoku();
-                this.highlightSelection(row, col);
+            if (!this.isNoteMode) {
+                if (this.solution[row][col].value === number) {
+                    this.board[row][col].value = number;
+
+                    // Automatically remove notes from the number in same Row, Col, Square if number was correct
+                    this.board.forEach((currentRow, currentRowIndex) => {
+                        currentRow.forEach((currentCell, currentColIndex) => {
+                            const sameSquare = Math.floor(row / 3) === Math.floor(currentRowIndex / 3) && Math.floor(col / 3) === Math.floor(currentColIndex / 3)
+                            const noteIndex = currentCell.notes.indexOf(number);
+                            if ((row === currentRowIndex || col == currentColIndex || sameSquare) && noteIndex != -1) {
+                                currentCell.notes.splice(noteIndex, 1);    
+                            }
+                        });
+                    })
+                    this.highlightSelection(row, col);
+                }
+                else {
+                    console.log("Wrong Number");
+                    // simple Errorhandling (complex errorhandling is part of another Userstory)
+                    const cellRect = this.grid.find(c => c.row === row && c.col === col).cellRect;
+                    cellRect.setFillStyle(0xff6666);
+                    this.time.delayedCall(500, () => {
+                        cellRect.setFillStyle(this.highlightColor);
+                    });
+                    return
+                }
             }
+
+            // Remove or add Notes in a cell
             else {
-                console.log("Wrong Number");
-                // simple Errorhandling (complex errorhandling is part of another Userstory)
-                const cellRect = this.grid.find(c => c.row === row && c.col === col).cellRect;
-                cellRect.setFillStyle(0xff6666);
-                this.time.delayedCall(500, () => {
-                    cellRect.setFillStyle(this.highlightColor);
-                });
+                const currentNotes = this.board[row][col].notes;
+                const index = currentNotes.indexOf(number);
+                index === -1 ? currentNotes.push(number): currentNotes.splice(index, 1);
+                this.board[row][col].notes = currentNotes;
             }
+            this.updateGrid();
+            this.saveSudoku();
         }
     }
 
@@ -248,24 +340,54 @@ class SudokuScene extends Phaser.Scene {
     highlightSelection(row, col) {
         const selectedValue = this.board[row][col].value;
         
-        this.grid.forEach(({ cellRect }) => {
+        //Resets all cell backgrounds and note highlights
+        this.grid.forEach(({ cellRect, notesText }) => {
             cellRect.setFillStyle(this.cellBackgroundColor);
+            if (notesText) {
+                notesText.forEach(noteText => {
+                    if (noteText.borderGraphics) {
+                        noteText.borderGraphics.destroy();
+                        noteText.borderGraphics = null;
+                    }
+                });
+            }
         });
 
-        this.grid.forEach(({ cellRect, cell }, index) => {
+        this.grid.forEach(({ cellRect, cell, notesText }, index) => {
             const gridRow = Math.floor(index / 9);
             const gridCol = index % 9;
 
+            //Highlight same row and grid
             if (gridRow === row || gridCol === col) {
                 cellRect.setFillStyle(this.tertiaryColor);
             }
 
+            //Highlight same numbers in the entire sudoku
             if (cell.value !== null && cell.value === selectedValue) {
                 cellRect.setFillStyle(this.highlightColor);
             }
 
+            // Highlight same Sudoku-square
             if(Math.floor(row / 3) === Math.floor(gridRow / 3) && Math.floor(col / 3) === Math.floor(gridCol / 3)) {
                 cellRect.setFillStyle(this.tertiaryColor);
+            }
+
+            // Highlight notes that match the selected value
+            if (selectedValue !== null && notesText) {
+                notesText.forEach(noteText => {
+                    if (parseInt(noteText.text) === selectedValue) {
+                        const padding = 2;
+                        const borderGraphics = this.add.graphics();
+                        borderGraphics.lineStyle(1.5, this.highlightNotesColor, 1); // Orange border
+                        borderGraphics.strokeRect(
+                            noteText.x - noteText.width/2 - padding, 
+                            noteText.y - noteText.height/2 - padding,
+                            noteText.width + padding*2, 
+                            noteText.height + padding*2
+                        );
+                        noteText.borderGraphics = borderGraphics;
+                    }
+                });
             }
         });
 
