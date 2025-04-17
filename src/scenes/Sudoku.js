@@ -242,20 +242,19 @@ class SudokuScene extends Phaser.Scene {
 
     updateGrid() {
         this.grid.forEach(({ cellRect, text, cell, row, col, notesText }) => {
+            if (notesText) {
+                notesText.forEach(n => {
+                    n.destroy();
+                });
+            }
+    
             if (cell.value !== null) {
                 text.setText(cell.value.toString());
                 const textColor = cell.isGiven ? this.textColor : this.newNumberColor;
                 text.setColor(textColor);
-
-                if (notesText) {
-                    notesText.forEach(n => n.destroy());
-                }
+                this.grid.find(c => c.row === row && c.col === col).notesText = [];
             } else {
                 text.setText('');    
-                if (notesText) {
-                    notesText.forEach(n => n.destroy());
-                }
-                
                 const notesTexts = this.createNotesText(cell, cellRect);
                 this.grid.find(c => c.row === row && c.col === col).notesText = notesTexts;
             }
@@ -302,7 +301,6 @@ class SudokuScene extends Phaser.Scene {
                             }
                         });
                     })
-                    this.highlightSelection(row, col);
                 }
                 else {
                     console.log("Wrong Number");
@@ -324,6 +322,7 @@ class SudokuScene extends Phaser.Scene {
                 this.board[row][col].notes = currentNotes;
             }
             this.updateGrid();
+            this.highlightSelection(row, col);
             this.saveSudoku();
         }
     }
