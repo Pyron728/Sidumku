@@ -1,0 +1,77 @@
+:root {
+    --primary-color: #FFFAED;      /* Hintergrund */
+    --secondary-color: #FAEDD6;    /* Buttons, Navigation, Linien */
+    --tertiary-color: #DACDAA;     /* Rahmen, Hover, Trennlinien */
+    --text-color: #32383C;         /* Text, Icons, starke Linien */
+    --accent-color: #A6A197;       /* Akzente */
+    --highlight-color: #F6D4D2;    /* Hinweise, Hervorhebungen */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    padding: 2rem;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+form {
+    max-width: 400px;
+    margin: auto;
+    background-color: white;
+    border: 1px solid var(--tertiary-color);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(50, 56, 60, 0.1);
+}
+
+label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid var(--tertiary-color);
+    border-radius: 4px;
+    background-color: #fff;
+    color: var(--text-color);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px var(--highlight-color);
+}
+
+button {
+    margin-top: 1.5rem;
+    padding: 0.7rem 1.5rem;
+    cursor: pointer;
+    background-color: var(--secondary-color);
+    border: 1px solid var(--tertiary-color);
+    border-radius: 4px;
+    color: var(--text-color);
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: var(--highlight-color);
+}
+
+.error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0;
+    display: block;    
+    visibility: hidden;     
+}
+
+.error.visible {
+    visibility: visible; 
+    margin-top: 1rem;
+}

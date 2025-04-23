@@ -149,7 +149,6 @@ export class SudokuScene extends Phaser.Scene {
         pencilmark.on('pointerdown', () => {
             this.isNoteMode = !this.isNoteMode; 
             updatePencilAppearance(false);
-            // this.scene.start("Register") -> scene switch in phaser.js but only for game scenes
             window.location.href = '/register';
         });
         pencilmark.on('pointerover', () => {

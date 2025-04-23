@@ -4,26 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="assets/cow.png" rel="icon" type="image/x-icon">
-    <title>Register</title>
+    <title>Login</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <form id="registerForm">
-        <h2>Registrierung</h2>
+    <form id="loginForm">
+        <h2>Login</h2>
 
         <label for="username">Benutzername:</label>
-        <input type="text" id="username" name="username" required pattern="^[a-zA-Z0-9_]{4,16}$" 
+        <input type="text" id="username" name="username" required 
+            pattern="^[a-zA-Z0-9_]{4,16}$" 
             title="Benutzername muss 4–16 Zeichen lang sein und darf nur Buchstaben, Zahlen und Unterstriche enthalten.">
 
         <label for="password">Passwort:</label>
-        <input type="password" id="password" name="password" required pattern=".{6,}" 
+        <input type="password" id="password" name="password" required 
+            pattern=".{6,}" 
             title="Passwort muss mindestens 6 Zeichen lang sein.">
 
         <p id="usernameError" class="error"> </p>
-        <button type="submit">Registrieren</button>
-        <p> Du hast bereits einen Account? <a href="/login">Login</a></p>
+        <button type="submit">Login</button>
+        <p> Noch keinen Account? <a href="/register">Registrieren</a></p>
     </form>
 
-    <script type="module" src="/register.js"></script>
+    <script type="module" src="/login.js"></script>
 </body>
 </html>
