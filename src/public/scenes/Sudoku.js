@@ -149,7 +149,6 @@ export class SudokuScene extends Phaser.Scene {
         pencilmark.on('pointerdown', () => {
             this.isNoteMode = !this.isNoteMode; 
             updatePencilAppearance(false);
-            window.location.href = '/register';
         });
         pencilmark.on('pointerover', () => {
             updatePencilAppearance(true); 
