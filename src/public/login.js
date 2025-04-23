@@ -19,7 +19,6 @@ export class Login {
             if (response) {
                 localStorage.setItem('username', username);
                 localStorage.setItem('password', password);
-                // + auth service
                 window.location.href = '/';
                 console.log('User logged in successfully:', response);
                 return true;
