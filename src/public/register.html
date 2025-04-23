@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin-top: 1rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        button {
+            margin-top: 1.5rem;
+            padding: 0.7rem 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <form id="registerForm">
+        <h2>Registrierung</h2>
+
+        <label for="username">Benutzername:</label>
+        <input type="text" id="username" name="username" required pattern="^[a-zA-Z0-9_]{4,16}$" 
+            title="Benutzername muss 4–16 Zeichen lang sein und darf nur Buchstaben, Zahlen und Unterstriche enthalten.">
+
+        <label for="password">Passwort:</label>
+        <input type="password" id="password" name="password" required pattern=".{6,}" 
+            title="Passwort muss mindestens 6 Zeichen lang sein.">
+
+        <button type="submit">Register</button>
+    </form>
+
+    <script type="module" src="/register.js"></script>
+</body>
+</html>
