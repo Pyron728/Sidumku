@@ -99,8 +99,9 @@ export class SudokuScene extends Phaser.Scene {
                 
                 const text = this.add.text(x, y, cell.value ? cell.value.toString() : '', {
                     fontSize: '24px',
-                    color: cell.isGiven ? textColor: this.newNumberColor,
-                    fontStyle: 'bold'
+                    fontFamily: 'Nunito',
+                    fontWeight: cell.isGiven ? '700' : '400',
+                    color: cell.isGiven ? textColor : this.newNumberColor
                 }).setOrigin(0.5);
 
                 let notesText = []
@@ -187,9 +188,10 @@ export class SudokuScene extends Phaser.Scene {
                 buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
 
                 this.add.text(x, y, button, {
-                    fontFamily: 'Bold', 
+                    fontFamily: 'Nunito',
                     fontSize: '32px',
-                    color: this.textColor,
+                    fontWeight: '700',
+                    color: this.textColor
                 }).setOrigin(0.5);
 
                 buttonBg.on('pointerover', () => drawButton(this.hoverColor));
@@ -212,7 +214,8 @@ export class SudokuScene extends Phaser.Scene {
             '00:00',
             {
                 fontSize: '32px',
-                fontFamily: 'Bold',
+                fontFamily: 'Nunito',
+                fontWeight: '700',
                 color: this.textColor
             }
         ).setOrigin(1, 0.5);
@@ -277,6 +280,8 @@ export class SudokuScene extends Phaser.Scene {
 
                 const noteText = this.add.text(noteX, noteY, n.toString(), {
                     fontSize: '12px',
+                    fontFamily: 'Nunito',
+                    fontWeight: '400',
                     color: this.textColor,
                     align: 'center'
                 }).setOrigin(0.5);
