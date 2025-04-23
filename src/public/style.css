@@ -1,77 +1,141 @@
 :root {
-    --primary-color: #FFFAED;      /* Hintergrund */
-    --secondary-color: #FAEDD6;    /* Buttons, Navigation, Linien */
-    --tertiary-color: #DACDAA;     /* Rahmen, Hover, Trennlinien */
-    --text-color: #32383C;         /* Text, Icons, starke Linien */
-    --accent-color: #A6A197;       /* Akzente */
-    --highlight-color: #F6D4D2;    /* Hinweise, Hervorhebungen */
+    --primary-color: #FFFAED;        /* Seitenhintergrund */
+    --secondary-color: #FAEDD6;      /* Buttons, Navigation-Bar, Kreuzlinie */
+    --tertiary-color: #DACDAA;       /* Umrandungen, dünne Linien, Hover */
+    --text-color: #32383C;           /* Text, Icons, dicke Linien */
+    --accent-color: #A6A197;         /* aktuelle Zahl */
+    --highlight-color: #F6D4D2;      /* Hinweise, Markierungen */
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Nunito', sans-serif;
     padding: 2rem;
     background-color: var(--primary-color);
     color: var(--text-color);
 }
 
 form {
-    max-width: 400px;
-    margin: auto;
-    background-color: white;
-    border: 1px solid var(--tertiary-color);
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(50, 56, 60, 0.1);
+    max-width: 360px;
+    margin: 2rem auto;
+    background-color: transparent;
+    border: none;
+    padding: 2rem 0;
+    color: var(--text-color);
 }
 
+/* Labels */
 label {
     display: block;
     margin-top: 1rem;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 1rem;
     color: var(--text-color);
 }
 
 input {
     width: 100%;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin-top: 1rem;
     border: 1px solid var(--tertiary-color);
-    border-radius: 4px;
+    border-radius: 8px;
     background-color: #fff;
+    font-size: 1rem;
+    font-family: 'Nunito', sans-serif;
     color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input::placeholder {
+    color: var(--tertiary-color);
+    font-weight: 400;
 }
 
 input:focus {
     outline: none;
     border-color: var(--accent-color);
-    box-shadow: 0 0 5px var(--highlight-color);
+    box-shadow: 0 0 0 3px var(--highlight-color);
+    background-color: #fff;
 }
 
 button {
     margin-top: 1.5rem;
-    padding: 0.7rem 1.5rem;
+    padding: 0.75rem 1rem;
+    width: 109%;
     cursor: pointer;
     background-color: var(--secondary-color);
     border: 1px solid var(--tertiary-color);
-    border-radius: 4px;
+    border-radius: 8px; /* Reduziert wie bei Inputs */
     color: var(--text-color);
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 1rem;
     transition: background-color 0.2s ease;
 }
 
 button:hover {
     background-color: var(--highlight-color);
+    border-color: var(--accent-color);
 }
 
+/* Fehleranzeige */
 .error {
     color: red;
     font-size: 0.9rem;
-    margin-top: 0;
-    display: block;    
-    visibility: hidden;     
+    display: block;
+    visibility: hidden;
 }
 
 .error.visible {
-    visibility: visible; 
+    visibility: visible;
     margin-top: 1rem;
+}
+
+/* Typografie gemäß Styleguide */
+h1, .heading-xl {
+    font-weight: 700;
+    font-size: 36px;
+}
+
+h2, .heading-l {
+    font-weight: 700;
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+p, .text {
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.button-text {
+    font-weight: 300;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 42px;
+    text-align: center;
+}
+
+/* Logo oben mit Bild */
+.logo-container {
+    text-align: center;
+    margin-top: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.logo-container img {
+    width: 60px;
+    height: auto;
+}
+
+.logo-container .logo-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-top: 0.5rem;
 }
