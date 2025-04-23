@@ -1,6 +1,8 @@
 import { generateSudoku } from '../generator/BasicSudokuGenerator.js';
 import { ApiService } from '../services/api.service.js';
+import { RegisterScene } from './Register.js';
 
+export class SudokuScene extends Phaser.Scene {
 export class SudokuScene extends Phaser.Scene {
     constructor() {
         super({ key: 'SudokuScene' });
@@ -73,7 +75,7 @@ export class SudokuScene extends Phaser.Scene {
                 const x = gridX + col * this.cellSize + extraX;
                 const y = gridY + row * this.cellSize + extraY;
 
-                 const cellRect = this.add.rectangle(x, y, this.cellSize, this.cellSize, this.basicBackgroundColor);
+                const cellRect = this.add.rectangle(x, y, this.cellSize, this.cellSize, this.basicBackgroundColor);
                 cellRect.setStrokeStyle(strokeWidth, this.strokeColor);
                 cellRect.setInteractive();
                 
@@ -147,7 +149,8 @@ export class SudokuScene extends Phaser.Scene {
         };
         pencilmark.on('pointerdown', () => {
             this.isNoteMode = !this.isNoteMode; 
-            updatePencilAppearance(false); 
+            updatePencilAppearance(false);
+            this.scene.start("RegisterScene")
         });
         pencilmark.on('pointerover', () => {
             updatePencilAppearance(true); 
@@ -328,7 +331,7 @@ export class SudokuScene extends Phaser.Scene {
         }
     }
 
-     async saveSudoku() {
+    async saveSudoku() {
         this.puzzle.currentBoard = this.board;
         const savedGame = await this.apiService.updateSudoku(this.puzzle);
         console.log(savedGame ? 'saved Game successfully': ('Error while saving game: ' + savedGame));
