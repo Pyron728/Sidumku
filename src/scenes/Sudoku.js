@@ -1,7 +1,7 @@
 import { generateSudoku } from '../generator/BasicSudokuGenerator.js';
 import { ApiService } from '../services/api.service.js';
 
-class SudokuScene extends Phaser.Scene {
+export class SudokuScene extends Phaser.Scene {
     constructor() {
         super({ key: 'SudokuScene' });
         this.board = [];
@@ -54,7 +54,8 @@ class SudokuScene extends Phaser.Scene {
                 this.insertNumber(row, col, parseInt(event.key));
             }
         });
-        this.createSudokuInDb(this.puzzle)
+        this.createSudokuInDb(this.puzzle);
+        this.createBackToMenuButton();
     }
 
     createGrid() {
@@ -400,21 +401,56 @@ class SudokuScene extends Phaser.Scene {
         selectedCell.cellRect.setFillStyle(this.highlightColor)
         this.selectedCell = { row, col };
     }
+    createBackToMenuButton() {
+        const buttonWidth = 180;
+        const buttonHeight = 40;
+        const radius = 10;
+
+        const x = 100;
+        const y = 40;
+
+        const buttonBg = this.add.graphics();
+        buttonBg.fillStyle(this.secondaryColor, 1);
+        buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+        buttonBg.lineStyle(2, this.hoverColor);
+        buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+        buttonBg.setPosition(x, y);
+
+        const hitArea = new Phaser.Geom.Rectangle(
+            -buttonWidth / 2,
+            -buttonHeight / 2,
+            buttonWidth,
+            buttonHeight
+        );
+        buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
+
+        const buttonText = this.add.text(x, y, 'Main Menu', {
+            fontFamily: 'Bold',
+            fontSize: '18px',
+            color: '#' + this.textColor.toString(16),
+        }).setOrigin(0.5);
+
+        buttonBg.on('pointerover', () => {
+            buttonBg.clear();
+            buttonBg.fillStyle(this.hoverColor, 1);
+            buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+            buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+        });
+
+        buttonBg.on('pointerout', () => {
+            buttonBg.clear();
+            buttonBg.fillStyle(this.secondaryColor, 1);
+            buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+            buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+        });
+
+        buttonBg.on('pointerdown', () => {
+            this.scene.start('MainMenuScene');
+        });
+    }
+
 
     update() {
         this.updateTimerDisplay()
     }
 }
-
-const config = {
-    type: Phaser.AUTO,
-    width: 1280,
-    height: 720,
-    scene: SudokuScene,
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-    }
-};
-
-const game = new Phaser.Game(config);
