@@ -35,6 +35,7 @@ export class SudokuScene extends Phaser.Scene {
     preload() {
         // preload für Bilddaten und so shit
         this.load.image('pencil', 'assets/pencilmark.png');
+        this.load.image('eraser', 'assets/eraser.png');
 
     }
 
@@ -49,9 +50,14 @@ export class SudokuScene extends Phaser.Scene {
         this.createUI();
         this.createTimer()
         this.input.keyboard.on('keydown', (event) => {
-            if (this.selectedCell != null && /^[1-9]$/.test(event.key)) {
-                const { row, col } = this.selectedCell; 
-                this.insertNumber(row, col, parseInt(event.key));
+            if (this.selectedCell) {
+                if (/^[1-9]$/.test(event.key)) {
+                    const { row, col } = this.selectedCell; 
+                    this.insertNumber(row, col, parseInt(event.key));
+                }
+                else if(event.key == ('Backspace' && 'Delete')){
+                    this.eraseCell();
+                }
             }
         });
         this.createSudokuInDb(this.puzzle);
@@ -131,10 +137,11 @@ export class SudokuScene extends Phaser.Scene {
         
         this.numberPadY = this.gridY + gridHeight / 2 - 35 - numpadHeight / 2;
 
+        const iconYPosition = this.numberPadY - this.cellSize / 2;
+
         const pencilXPosition = this.numberPadX + this.cellSize + buttonSpacing;
-        const pencilYPosition = this.numberPadY - this.cellSize / 2;
         const pencilSize = this.cellSize / 1.5;
-        const pencilmark = this.add.sprite(pencilXPosition, pencilYPosition, 'pencil').
+        const pencilmark = this.add.sprite(pencilXPosition, iconYPosition, 'pencil').
             setDisplaySize(pencilSize, pencilSize).
             setInteractive().
             setTintFill(this.textColor);
@@ -155,6 +162,24 @@ export class SudokuScene extends Phaser.Scene {
         });
         pencilmark.on('pointerout', () => {
             updatePencilAppearance(false); 
+        });
+
+        const eraserXPosition = this.numberPadX;
+        const eraserSize = this.cellSize / 1.5;
+        const eraser = this.add.sprite(eraserXPosition, iconYPosition, 'eraser').
+            setDisplaySize(eraserSize, eraserSize).
+            setInteractive().
+            setTintFill(this.textColor);
+
+        eraser.on('pointerdown', () => {
+            this.eraseCell();
+        });
+
+        eraser.on('pointerover', () => {
+            eraser.setTintFill(this.hoverColor);
+        });
+        eraser.on('pointerout', () => {
+            eraser.setTintFill(this.textColor);
         });
 
         numbers.forEach((row, rowIndex) => {
@@ -331,6 +356,16 @@ export class SudokuScene extends Phaser.Scene {
             this.highlightSelection(row, col);
             this.saveSudoku();
         }
+    }
+
+    eraseCell() {
+        if (!this.selectedCell) {
+            console.log('no cell selected');
+            return
+        }
+        const { row, col } = this.selectedCell;
+        this.board[row][col].notes = [];
+        this.updateGrid()
     }
 
     async saveSudoku() {
