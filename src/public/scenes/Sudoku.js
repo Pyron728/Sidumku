@@ -250,6 +250,14 @@ export class SudokuScene extends Phaser.Scene {
     updateMistakeCounter() {
         this.errorText.setText(`Mistakes: ${this.puzzle.mistakes}`);
 
+        // Little Counter animation
+        this.tweens.add({
+            targets: this.errorText,
+            scale: 1.1,
+            duration: 150,
+            yoyo: true,
+            ease: 'Sine.easeInOut'
+        });
     }
 
     createTimer(){
@@ -363,6 +371,14 @@ export class SudokuScene extends Phaser.Scene {
                     this.updateMistakeCounter();
                     this.board[row][col].mistakeValue = number;
                     
+                    // Shakes the number for a short time
+                    const cellText = this.grid.find(c => c.row === row && c.col === col).text;
+                    this.tweens.add({
+                        targets: cellText,
+                        x: cellText.x - 5,
+                        yoyo: true,
+                        repeat: 2,
+                        duration: 50
                     });
                 }
             }
