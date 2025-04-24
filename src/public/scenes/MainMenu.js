@@ -10,15 +10,22 @@ export class MainMenuScene extends Phaser.Scene {
         this.hoverColor = this.tertiaryColor;
     }
 
+
+    preload() {
+        this.load.image('logo_cow', 'assets/cow.png');
+    }
+
     create() {
         this.cameras.main.setBackgroundColor(this.primaryColor);
 
         const centerX = this.scale.width / 2;
         const centerY = this.scale.height / 2;
 
+        this.add.image(centerX - 150, centerY - 150, 'logo_cow').setOrigin(0.5).setScale(0.3);
         // Game Title
-        this.add.text(centerX, centerY - 150, 'Sudoku Master', {
-            fontFamily: 'Bold',
+        this.add.text(centerX + 50, centerY - 150, 'Sidumku', {
+            fontFamily: 'Nunito',
+            fontWeight: '900',
             fontSize: '64px',
             color: '#' + this.textColor.toString(16),
         }).setOrigin(0.5);
@@ -26,7 +33,7 @@ export class MainMenuScene extends Phaser.Scene {
         // Buttons
         const buttons = [
             { label: 'New Game', scene: 'SudokuScene' },
-            { label: 'Continue', callback: () => console.log('Load saved game...') },
+            { label: 'Login', callback: () => window.location.href = '/login' },
             { label: 'Settings', callback: () => console.log('Settings pressed...') },
         ];
 
@@ -60,7 +67,8 @@ export class MainMenuScene extends Phaser.Scene {
         buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
 
         const buttonText = this.add.text(x, y, label, {
-            fontFamily: 'Bold',
+            fontFamily: 'Nunito',
+            fontWeight: '700',
             fontSize: '28px',
             color: '#' + this.textColor.toString(16),
         }).setOrigin(0.5);

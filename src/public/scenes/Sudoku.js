@@ -430,7 +430,8 @@ export class SudokuScene extends Phaser.Scene {
         buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
 
         const buttonText = this.add.text(x, y, 'Main Menu', {
-            fontFamily: 'Bold',
+            fontFamily: 'Nunito',
+            fontWeight: '700',
             fontSize: '18px',
             color: '#' + this.textColor.toString(16),
         }).setOrigin(0.5);
