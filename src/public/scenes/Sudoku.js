@@ -29,7 +29,8 @@ export class SudokuScene extends Phaser.Scene {
         this.highlightNotesColor = 0xFF8C00;
         this.basicBackgroundColor = this.primaryColor;
         this.strokeColor = this.textColor;
-        this.newNumberColor =  'blue' 
+        this.newNumberColor =  'blue';
+        this.errorColor = 'red';
     }
 
     preload() {
@@ -282,7 +283,11 @@ export class SudokuScene extends Phaser.Scene {
                 const textColor = cell.isGiven ? this.textColor : this.newNumberColor;
                 text.setColor(textColor);
                 this.grid.find(c => c.row === row && c.col === col).notesText = [];
-            } else {
+            } else if(cell.mistakeValue !== null){
+                text.setText(cell.mistakeValue.toString());
+                text.setColor(this.errorColor);
+            }
+            else {
                 text.setText('');    
                 const notesTexts = this.createNotesText(cell, cellRect);
                 this.grid.find(c => c.row === row && c.col === col).notesText = notesTexts;
@@ -317,7 +322,7 @@ export class SudokuScene extends Phaser.Scene {
     }
 
     insertNumber(row, col, number) {
-        if (!this.board[row][col].isGiven) {
+        if (!this.board[row][col].isGiven && !this.board[row][col].mistakeValue) {
             if (!this.isNoteMode) {
                 if (this.solution[row][col].value === number) {
                     this.board[row][col].value = number;
@@ -334,12 +339,10 @@ export class SudokuScene extends Phaser.Scene {
                     })
                 }
                 else {
-                    console.log("Wrong Number");
-                    // simple Errorhandling (complex errorhandling is part of another Userstory)
-                    const cellRect = this.grid.find(c => c.row === row && c.col === col).cellRect;
-                    cellRect.setFillStyle(0xff6666);
-                    this.time.delayedCall(500, () => {
-                        cellRect.setFillStyle(this.highlightColor);
+                    this.puzzle.mistakes++;
+                    this.updateMistakeCounter();
+                    this.board[row][col].mistakeValue = number;
+                    
                     });
                     return
                 }
@@ -365,7 +368,8 @@ export class SudokuScene extends Phaser.Scene {
         }
         const { row, col } = this.selectedCell;
         this.board[row][col].notes = [];
-        this.updateGrid()
+        this.board[row][col].mistakeValue = null;
+        this.updateGrid();
     }
 
     async saveSudoku() {
