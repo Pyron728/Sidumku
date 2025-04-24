@@ -49,6 +49,7 @@ export class SudokuScene extends Phaser.Scene {
         this.solution = this.puzzle.solvedBoard;
         this.createGrid();
         this.createUI();
+        this.createErrorCounter()
         this.createTimer()
         this.input.keyboard.on('keydown', (event) => {
             if (this.selectedCell) {
@@ -232,6 +233,25 @@ export class SudokuScene extends Phaser.Scene {
         });
     }
 
+    createErrorCounter() {
+        this.errorText = this.add.text(
+            this.scale.width / 2 + 100,  // Position it right from the timer
+            40,
+            'Mistakes: ' + this.puzzle.mistakes.toString(),
+            {
+                fontSize: '24px',
+                fontFamily: 'Nunito',
+                fontWeight: '700',
+                color: this.textColor
+            }
+        ).setOrigin(0, 0.5);
+    }
+
+    updateMistakeCounter() {
+        this.errorText.setText(`Mistakes: ${this.puzzle.mistakes}`);
+
+    }
+
     createTimer(){
         this.timer = this.add.text(
             this.scale.width / 2,
@@ -344,7 +364,6 @@ export class SudokuScene extends Phaser.Scene {
                     this.board[row][col].mistakeValue = number;
                     
                     });
-                    return
                 }
             }
 
