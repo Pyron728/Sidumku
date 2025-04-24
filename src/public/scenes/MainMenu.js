@@ -2,14 +2,12 @@ export class MainMenuScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainMenuScene' });
 
-        // Color palette
         this.primaryColor = 0xFFFAED;
         this.secondaryColor = 0xFAEDD6;
         this.tertiaryColor = 0xDACDAA;
         this.textColor = 0x32383C;
         this.hoverColor = this.tertiaryColor;
     }
-
 
     preload() {
         this.load.image('logo_cow', 'assets/cow.png');
@@ -18,19 +16,20 @@ export class MainMenuScene extends Phaser.Scene {
     create() {
         this.cameras.main.setBackgroundColor(this.primaryColor);
 
-        const centerX = this.scale.width / 2;
-        const centerY = this.scale.height / 2;
+        const centerX = Math.round(this.scale.width / 2);
+        const centerY = Math.round(this.scale.height / 2);
 
-        this.add.image(centerX - 150, centerY - 150, 'logo_cow').setOrigin(0.5).setScale(0.3);
-        // Game Title
+        this.add.image(centerX - 150, centerY - 150, 'logo_cow')
+            .setOrigin(0.5)
+            .setScale(0.3);
+
         this.add.text(centerX + 50, centerY - 150, 'Sidumku', {
             fontFamily: 'Nunito',
-            fontWeight: '900',
             fontSize: '64px',
+            fontStyle: '900',
             color: '#' + this.textColor.toString(16),
         }).setOrigin(0.5);
 
-        // Buttons
         const buttons = [
             { label: 'New Game', scene: 'SudokuScene' },
             { label: 'Login', callback: () => window.location.href = '/login' },
@@ -38,7 +37,7 @@ export class MainMenuScene extends Phaser.Scene {
         ];
 
         const buttonHeight = 60;
-        const buttonSpacing = 20;
+        const buttonSpacing = 30; // Etwas mehr Abstand für Harmonie
 
         buttons.forEach((btn, index) => {
             const y = centerY + index * (buttonHeight + buttonSpacing);
@@ -56,7 +55,7 @@ export class MainMenuScene extends Phaser.Scene {
         buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
         buttonBg.lineStyle(2, this.hoverColor);
         buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
-        buttonBg.setPosition(x, y);
+        buttonBg.setPosition(Math.round(x), Math.round(y));
 
         const hitArea = new Phaser.Geom.Rectangle(
             -buttonWidth / 2,
@@ -66,10 +65,10 @@ export class MainMenuScene extends Phaser.Scene {
         );
         buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
 
-        const buttonText = this.add.text(x, y, label, {
+        const buttonText = this.add.text(Math.round(x), Math.round(y), label, {
             fontFamily: 'Nunito',
-            fontWeight: '700',
             fontSize: '28px',
+            fontStyle: '700',
             color: '#' + this.textColor.toString(16),
         }).setOrigin(0.5);
 

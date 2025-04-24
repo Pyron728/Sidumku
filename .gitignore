@@ -19,3 +19,7 @@ yarn-error.log*
 dist/
 out/
 .cache/
+
+# Datenbankdateien
+sudoku.db
+user.db
