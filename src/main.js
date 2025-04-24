@@ -1,5 +1,5 @@
-import {SudokuScene} from "./scenes/Sudoku.js";
-import {MainMenuScene} from "./scenes/MainMenu.js";
+import {SudokuScene} from "./public/scenes/Sudoku.js";
+import {MainMenuScene} from "./public/scenes/MainMenu.js";
 
 const config = {
     type: Phaser.AUTO,

@@ -2,7 +2,6 @@ import { generateSudoku } from '../generator/BasicSudokuGenerator.js';
 import { ApiService } from '../services/api.service.js';
 
 export class SudokuScene extends Phaser.Scene {
-export class SudokuScene extends Phaser.Scene {
     constructor() {
         super({ key: 'SudokuScene' });
         this.board = [];
