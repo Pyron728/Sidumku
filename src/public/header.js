@@ -26,13 +26,12 @@ export class Header {
     }
 
     showDeleteModal() {
-        // Modal erzeugen, wenn nicht vorhanden
         if (document.getElementById("delete-modal")) return;
     
         const modal = document.createElement("div");
         modal.id = "delete-modal";
         modal.innerHTML = `
-            <div style="
+            <div id="modal-backdrop" style="
                 position: fixed;
                 top: 0; left: 0;
                 width: 100vw; height: 100vh;
@@ -40,9 +39,10 @@ export class Header {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                z-index: 999;
+                z-index: 9999;
+                pointer-events: all;
             ">
-                <div style="
+                <div id="modal-content" style="
                     background: #FFFAED;
                     border: 1px solid #DACDAA;
                     border-radius: 16px;
@@ -52,6 +52,7 @@ export class Header {
                     font-family: 'Nunito', sans-serif;
                     box-shadow: 0 8px 24px rgba(50, 56, 60, 0.2);
                     animation: fadeIn 0.3s ease;
+                    pointer-events: auto;
                 ">
                     <h3 style="margin-bottom: 12px; font-size: 20px;">Bist du dir sicher?</h3>
                     <p style="margin-bottom: 20px; font-size: 16px;">Möchtest du wirklich deinen Account löschen?</p>
@@ -64,14 +65,30 @@ export class Header {
         `;
     
         document.body.appendChild(modal);
+        document.body.style.overflow = "hidden"; // Scrollen deaktivieren
     
-        document.getElementById("cancel-delete").onclick = () => modal.remove();
+        const backdrop = document.getElementById("modal-backdrop");
+        const content = document.getElementById("modal-content");
+    
+        // Schließen bei Klick außerhalb
+        backdrop.addEventListener("click", (e) => {
+            if (!content.contains(e.target)) {
+                modal.remove();
+                document.body.style.overflow = ""; // Scrollen wieder aktivieren
+            }
+        });
+    
+        document.getElementById("cancel-delete").onclick = () => {
+            modal.remove();
+            document.body.style.overflow = "";
+        };
+    
         document.getElementById("confirm-delete").onclick = () => {
             this.deleteAccount();
             modal.remove();
+            document.body.style.overflow = "";
         };
     }
-
 }
 
     const header = document.getElementById("header");
