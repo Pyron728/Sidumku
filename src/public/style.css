@@ -9,8 +9,8 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    padding: 2rem;
     background-color: var(--primary-color);
+    margin: 0;
     color: var(--text-color);
 }
 
@@ -72,8 +72,8 @@ button {
 }
 
 button:hover {
-    background-color: var(--highlight-color);
-    border-color: var(--accent-color);
+    background-color: var(--tertiary-color);
+    border-color: var(--tertiary-color);
 }
 
 /* Fehleranzeige */
@@ -123,8 +123,8 @@ p, .text {
 /* Logo oben mit Bild */
 .logo-container {
     text-align: center;
-    margin-top: 2rem;
-    margin-bottom: 1.5rem;
+    margin-top: 5rem;
+    margin-bottom: 1rem;
 }
 
 .logo-container img {
@@ -168,16 +168,9 @@ p, .text {
     to { transform: rotate(360deg); }
 }
 
-.site-header {
-    text-align: center;
-    padding: 20px;
-    background-color: #333;
-    color: white;
-}
-  
-.site-footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #f1f1f1;
-    color: #000;
+header, footer {
+    background-color: #32383C;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
 }

@@ -13,7 +13,6 @@ export class MainMenuScene extends Phaser.Scene {
 
     preload() {
         this.load.image('logo_cow', 'assets/cow.png');
-        this.load.image('arrow_to_cow', 'assets/arrow_to_cow.png');
     }
 
     create() {
@@ -22,9 +21,10 @@ export class MainMenuScene extends Phaser.Scene {
         const centerX = Math.round(this.scale.width / 2);
         const centerY = Math.round(this.scale.height / 2);
 
-        this.add.image(centerX - 150, centerY - 150, 'logo_cow')
+        const logoImage = this.add.image(centerX - 150, centerY - 150, 'logo_cow')
             .setOrigin(0.5)
-            .setScale(0.3);
+            .setScale(0.3)
+            .setInteractive({ cursor: 'pointer' });
 
         this.add.text(centerX + 50, centerY - 150, 'Sidumku', {
             fontFamily: 'Nunito',
@@ -32,12 +32,22 @@ export class MainMenuScene extends Phaser.Scene {
             fontStyle: '900',
             color: '#' + this.textColor.toString(16),
         }).setOrigin(0.5);
-        
+
+        logoImage.on('pointerdown', () => {
+            this.spawnPoo(
+                logoImage.x + Phaser.Math.Between(-30, 30),
+                logoImage.y + Phaser.Math.Between(-30, 30)
+            );
+        });
+
         const authService = new AuthService();
         const buttons = [
-            { label: 'Neues Spiel', scene: 'SudokuScene' },
-            { label: 'Pausiert' },
+            { label: 'Neues Spiel', scene: 'SudokuScene' }, 
         ];
+
+        if (authService.isLoggedIn()) {
+            buttons.push({ label: 'Pausiert' });
+        } 
 
         const buttonHeight = 60;
         const buttonSpacing = 30;
@@ -94,6 +104,23 @@ export class MainMenuScene extends Phaser.Scene {
                 this.scene.start(targetScene);
             } else if (callback) {
                 callback();
+            }
+        });
+    }
+
+    spawnPoo(x, y) {
+        const poo = this.add.text(x, y, '💩', {
+            fontSize: `${Phaser.Math.Between(24, 36)}px`
+        }).setOrigin(0.5).setAlpha(1);
+
+        this.tweens.add({
+            targets: poo,
+            y: y - Phaser.Math.Between(30, 60),
+            alpha: 0,
+            duration: Phaser.Math.Between(800, 1200),
+            ease: 'Sine.easeIn',
+            onComplete: () => {
+                poo.destroy();
             }
         });
     }
