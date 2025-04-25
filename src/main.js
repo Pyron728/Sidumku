@@ -4,7 +4,7 @@ import { MainMenuScene } from "./public/scenes/MainMenu.js";
 const config = {
     type: Phaser.AUTO,
     width: 1280,
-    height: 720,
+    height: 720, 
     resolution: window.devicePixelRatio || 1,
     parent: 'game-container',
     scene: [MainMenuScene, SudokuScene],

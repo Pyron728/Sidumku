@@ -28,7 +28,6 @@ export class Header {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
     const header = document.getElementById("header");
 
     const username = (localStorage.getItem("username") || "").trim().toLowerCase();
@@ -172,4 +171,3 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-});

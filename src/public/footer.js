@@ -1,4 +1,3 @@
-document.addEventListener("DOMContentLoaded", () => {
     const footer = document.createElement("footer");
     footer.id = "footer";
     footer.innerText = "© 2025 Sidumku – Patrick, Danilo & Nico. Alle Rechte vorbehalten.";
@@ -16,4 +15,3 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     `;
     document.head.appendChild(style);
-});
