@@ -7,7 +7,8 @@
     --highlight-color: #F6D4D2;      /* Hinweise, Markierungen */
 }
 
-body {
+html, body {
+    height: 100%;
     font-family: 'Nunito', sans-serif;
     background-color: var(--primary-color);
     margin: 0;
@@ -166,11 +167,4 @@ p, .text {
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
-}
-
-header, footer {
-    background-color: #32383C;
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
 }
