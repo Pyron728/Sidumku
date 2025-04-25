@@ -57,7 +57,7 @@ export class SudokuScene extends Phaser.Scene {
                     const { row, col } = this.selectedCell; 
                     this.insertNumber(row, col, parseInt(event.key));
                 }
-                else if(event.key == ('Backspace' && 'Delete')){
+                else if(event.key == ('Backspace' || 'Delete')){
                     this.eraseCell();
                 }
             }
