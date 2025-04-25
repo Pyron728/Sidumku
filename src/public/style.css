@@ -167,3 +167,17 @@ p, .text {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+
+.site-header {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+}
+  
+.site-footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #f1f1f1;
+    color: #000;
+}

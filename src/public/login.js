@@ -11,6 +11,10 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
 });
 const usernameError = document.getElementById('usernameError');
 
+if (localStorage.getItem("username") != null) {
+    window.location.href = '/';
+}
+
 export class Login {
     async authenticateUser(username, password) {
         const apiService = new ApiService();
@@ -19,6 +23,7 @@ export class Login {
             if (response) {
                 localStorage.setItem('username', username);
                 localStorage.setItem('password', password);
+                localStorage.setItem('id', response._id);
                 window.location.href = '/';
                 console.log('User logged in successfully:', response);
                 return true;

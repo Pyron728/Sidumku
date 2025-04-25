@@ -3,18 +3,19 @@ import { MainMenuScene } from "./public/scenes/MainMenu.js";
 
 const config = {
     type: Phaser.AUTO,
-    width: 1280, // logische Breite
-    height: 720, // logische Höhe
-    resolution: window.devicePixelRatio || 1, // HiDPI-Unterstützung
+    width: 1280,
+    height: 720,
+    resolution: window.devicePixelRatio || 1,
+    parent: 'game-container',
     scene: [MainMenuScene, SudokuScene],
     scale: {
-        mode: Phaser.Scale.ENVELOP,
+        mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     render: {
-        antialias: true,     // glättet Text & Vektor-Kanten
-        pixelArt: false,     // wichtig: false für moderne UIs
-        roundPixels: false   // kann für Buttons true oder false sein
+        antialias: true,
+        pixelArt: false,
+        roundPixels: false
     }
 };
 

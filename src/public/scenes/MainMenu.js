@@ -1,3 +1,5 @@
+import { AuthService } from '../services/auth.service.js';
+
 export class MainMenuScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainMenuScene' });
@@ -11,6 +13,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     preload() {
         this.load.image('logo_cow', 'assets/cow.png');
+        this.load.image('arrow_to_cow', 'assets/arrow_to_cow.png');
     }
 
     create() {
@@ -29,15 +32,15 @@ export class MainMenuScene extends Phaser.Scene {
             fontStyle: '900',
             color: '#' + this.textColor.toString(16),
         }).setOrigin(0.5);
-
+        
+        const authService = new AuthService();
         const buttons = [
-            { label: 'New Game', scene: 'SudokuScene' },
-            { label: 'Login', callback: () => window.location.href = '/login' },
-            { label: 'Settings', callback: () => console.log('Settings pressed...') },
+            { label: 'Neues Spiel', scene: 'SudokuScene' },
+            { label: 'Pausiert' },
         ];
 
         const buttonHeight = 60;
-        const buttonSpacing = 30; // Etwas mehr Abstand für Harmonie
+        const buttonSpacing = 30;
 
         buttons.forEach((btn, index) => {
             const y = centerY + index * (buttonHeight + buttonSpacing);

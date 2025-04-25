@@ -11,6 +11,10 @@ document.getElementById("registerForm").addEventListener("submit", function(e) {
 });
 const usernameError = document.getElementById('usernameError');
 
+if (localStorage.getItem("username") != null) {
+    window.location.href = '/';
+}
+
 export class Register {
     async registerUser(username, password) {
         const apiService = new ApiService();
@@ -19,7 +23,7 @@ export class Register {
             if (response) {
                 localStorage.setItem('username', username);
                 localStorage.setItem('password', password);
-                // + auth service
+                localStorage.setItem('id', response._id);
                 window.location.href = '/';
                 console.log('User registered successfully:', response);
                 return true;
