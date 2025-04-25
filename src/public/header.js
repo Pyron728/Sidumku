@@ -11,21 +11,67 @@ export class Header {
     deleteAccount() {
         const apiService = new ApiService();
         const authService = new AuthService();
-
-        if (confirm("Bist du sicher, dass du deinen Account löschen möchtest?")) {
-            apiService.deleteUser(
-                localStorage.getItem("id"),
-                localStorage.getItem("username"),
-                localStorage.getItem("password")
-            );
-            authService.logOut();
-        }
+    
+        apiService.deleteUser(
+            localStorage.getItem("id"),
+            localStorage.getItem("username"),
+            localStorage.getItem("password")
+        );
+        authService.logOut();
     }
 
     toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
         alert("Fehlt noch...");
     }
+
+    showDeleteModal() {
+        // Modal erzeugen, wenn nicht vorhanden
+        if (document.getElementById("delete-modal")) return;
+    
+        const modal = document.createElement("div");
+        modal.id = "delete-modal";
+        modal.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 0; left: 0;
+                width: 100vw; height: 100vh;
+                background-color: rgba(50, 56, 60, 0.4);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 999;
+            ">
+                <div style="
+                    background: #FFFAED;
+                    border: 1px solid #DACDAA;
+                    border-radius: 16px;
+                    padding: 24px;
+                    width: 300px;
+                    text-align: center;
+                    font-family: 'Nunito', sans-serif;
+                    box-shadow: 0 8px 24px rgba(50, 56, 60, 0.2);
+                    animation: fadeIn 0.3s ease;
+                ">
+                    <h3 style="margin-bottom: 12px; font-size: 20px;">Bist du dir sicher?</h3>
+                    <p style="margin-bottom: 20px; font-size: 16px;">Möchtest du wirklich deinen Account löschen?</p>
+                    <div style="display: flex; justify-content: space-between;">
+                        <button id="cancel-delete" style="flex: 1; margin-right: 8px;">Abbrechen</button>
+                        <button id="confirm-delete" style="flex: 1; background-color: #E07A5F; border-color: #E07A5F; color: white;">Ja, löschen</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    
+        document.body.appendChild(modal);
+    
+        document.getElementById("cancel-delete").onclick = () => modal.remove();
+        document.getElementById("confirm-delete").onclick = () => {
+            this.deleteAccount();
+            modal.remove();
+        };
+    }
+
 }
 
     const header = document.getElementById("header");
@@ -127,6 +173,12 @@ export class Header {
         #header a span {
             color: #32383C;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1);
+        }
+}
     </style>
 
     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -147,8 +199,8 @@ export class Header {
                         <div class="dropdown-item" onclick="headerClass.toggleDarkMode()">Dark Mode</div>
                         <div class="dropdown-item" onclick="headerClass.logout()">Logout</div>
                         <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" onclick="headerClass.deleteAccount()">Account löschen</div>
-                    </div>
+                        <div class="dropdown-item" onclick="headerClass.showDeleteModal()">Account löschen</div>                    
+                </div>
                 </div>
             ` : `
                 <button onclick="window.location.href = '/login'">Login</button>

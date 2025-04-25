@@ -5,12 +5,13 @@ const config = {
     type: Phaser.AUTO,
     width: 1280,
     height: 720, 
-    resolution: window.devicePixelRatio || 1,
+    resolution: 2,
     parent: 'game-container',
     scene: [MainMenuScene, SudokuScene],
     scale: {
         mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        zoom: 1,
     },
     render: {
         antialias: true,
