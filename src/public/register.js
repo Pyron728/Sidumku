@@ -31,3 +31,50 @@ export class Register {
         return false;
     }
 }
+
+const agbText = document.getElementById('agbText');
+const spinner = document.getElementById('spinnerPopup');
+
+let isJapanese = false;
+
+const translations = {
+    de: {
+        'Registrierung': 'Registrierung',
+        'Benutzername': 'Benutzername',
+        'Passwort': 'Passwort',
+        'Registrieren': 'Registrieren',
+        'Du hast bereits einen Account?': 'Du hast bereits einen Account?',
+        'Login': 'Login',
+        'Ich stimme den AGB zu': 'Ich stimme den AGB zu',
+        'Sidumku': 'Sidumku'
+    },
+    ja: {
+        'Registrierung': '登録',
+        'Benutzername': 'ユーザー名',
+        'Passwort': 'パスワード',
+        'Registrieren': '登録する',
+        'Du hast bereits einen Account?': 'すでにアカウントをお持ちですか？',
+        'Login': 'ログイン',
+        'Ich stimme den AGB zu': '利用規約に同意します',
+        'Sidumku': 'しどぅむく'
+    }
+};
+
+function translatePage(toLang) {
+    document.querySelector('h2').textContent = translations[toLang]['Registrierung'];
+    document.getElementById('username').placeholder = translations[toLang]['Benutzername'];
+    document.getElementById('password').placeholder = translations[toLang]['Passwort'];
+    document.getElementById('title').textContent = translations[toLang]['Sidumku'];
+    document.querySelector('button[type="submit"]').textContent = translations[toLang]['Registrieren'];
+    document.getElementById('login').innerHTML = `${translations[toLang]['Du hast bereits einen Account?']} <a href="/login">${translations[toLang]['Login']}</a>`;    document.querySelector('form p a').textContent = translations[toLang]['Login'];
+    document.getElementById('agbText').textContent = translations[toLang]['Ich stimme den AGB zu'];
+}
+
+agbText.addEventListener('click', () => {
+    spinner.classList.remove('hidden');
+    setTimeout(() => {
+        isJapanese = !isJapanese;
+        translatePage(isJapanese ? 'ja' : 'de');
+        spinner.classList.add('hidden');
+    }, 4000);
+});
