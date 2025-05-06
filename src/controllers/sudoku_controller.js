@@ -16,7 +16,7 @@ async function validateSudokuInput(req, res, next) {
         return res.status(400).json({ message: 'Solved board missing' });
     } else if (!req.body.difficulty) {
         return res.status(400).json({ message: 'Difficulty missing' });
-    } else if (!['easy', 'medium', 'hard'].includes(req.body.difficulty)) {
+    } else if (!['easy', 'medium', 'hard'].includes(req.body.difficulty.toLowerCase())) {
         return res.status(400).json({ message: 'Invalid difficulty level' });
     } else {
         next();
