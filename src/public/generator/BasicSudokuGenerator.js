@@ -270,6 +270,7 @@ function convert2DArrayToSudokuCellArray(puzzle) {
       const cell = {
         value: value === 0 ? null : value,
         isGiven: value !== 0,
+        mistakeValue: null,
         notes: [],
         color: ""
       };

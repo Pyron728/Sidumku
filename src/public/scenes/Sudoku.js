@@ -29,12 +29,14 @@ export class SudokuScene extends Phaser.Scene {
         this.highlightNotesColor = 0xFF8C00;
         this.basicBackgroundColor = this.primaryColor;
         this.strokeColor = this.textColor;
-        this.newNumberColor =  'blue' 
+        this.newNumberColor =  'blue';
+        this.errorColor = 'red';
     }
 
     preload() {
         // preload für Bilddaten und so shit
         this.load.image('pencil', 'assets/pencilmark.png');
+        this.load.image('eraser', 'assets/eraser.png');
 
     }
 
@@ -47,11 +49,17 @@ export class SudokuScene extends Phaser.Scene {
         this.solution = this.puzzle.solvedBoard;
         this.createGrid();
         this.createUI();
+        this.createErrorCounter()
         this.createTimer()
         this.input.keyboard.on('keydown', (event) => {
-            if (this.selectedCell != null && /^[1-9]$/.test(event.key)) {
-                const { row, col } = this.selectedCell; 
-                this.insertNumber(row, col, parseInt(event.key));
+            if (this.selectedCell) {
+                if (/^[1-9]$/.test(event.key)) {
+                    const { row, col } = this.selectedCell; 
+                    this.insertNumber(row, col, parseInt(event.key));
+                }
+                else if(event.key == ('Backspace' || 'Delete')){
+                    this.eraseCell();
+                }
             }
         });
         this.createSudokuInDb(this.puzzle);
@@ -131,10 +139,11 @@ export class SudokuScene extends Phaser.Scene {
         
         this.numberPadY = this.gridY + gridHeight / 2 - 35 - numpadHeight / 2;
 
+        const iconYPosition = this.numberPadY - this.cellSize / 2;
+
         const pencilXPosition = this.numberPadX + this.cellSize + buttonSpacing;
-        const pencilYPosition = this.numberPadY - this.cellSize / 2;
         const pencilSize = this.cellSize / 1.5;
-        const pencilmark = this.add.sprite(pencilXPosition, pencilYPosition, 'pencil').
+        const pencilmark = this.add.sprite(pencilXPosition, iconYPosition, 'pencil').
             setDisplaySize(pencilSize, pencilSize).
             setInteractive().
             setTintFill(this.textColor);
@@ -155,6 +164,24 @@ export class SudokuScene extends Phaser.Scene {
         });
         pencilmark.on('pointerout', () => {
             updatePencilAppearance(false); 
+        });
+
+        const eraserXPosition = this.numberPadX;
+        const eraserSize = this.cellSize / 1.5;
+        const eraser = this.add.sprite(eraserXPosition, iconYPosition, 'eraser').
+            setDisplaySize(eraserSize, eraserSize).
+            setInteractive().
+            setTintFill(this.textColor);
+
+        eraser.on('pointerdown', () => {
+            this.eraseCell();
+        });
+
+        eraser.on('pointerover', () => {
+            eraser.setTintFill(this.hoverColor);
+        });
+        eraser.on('pointerout', () => {
+            eraser.setTintFill(this.textColor);
         });
 
         numbers.forEach((row, rowIndex) => {
@@ -203,6 +230,33 @@ export class SudokuScene extends Phaser.Scene {
                     }
                 });
             });
+        });
+    }
+
+    createErrorCounter() {
+        this.errorText = this.add.text(
+            this.scale.width / 2 + 100,  // Position it right from the timer
+            40,
+            'Mistakes: ' + this.puzzle.mistakes.toString(),
+            {
+                fontSize: '24px',
+                fontFamily: 'Nunito',
+                fontWeight: '700',
+                color: this.textColor
+            }
+        ).setOrigin(0, 0.5);
+    }
+
+    updateMistakeCounter() {
+        this.errorText.setText(`Mistakes: ${this.puzzle.mistakes}`);
+
+        // Little Counter animation
+        this.tweens.add({
+            targets: this.errorText,
+            scale: 1.1,
+            duration: 150,
+            yoyo: true,
+            ease: 'Sine.easeInOut'
         });
     }
 
@@ -257,7 +311,11 @@ export class SudokuScene extends Phaser.Scene {
                 const textColor = cell.isGiven ? this.textColor : this.newNumberColor;
                 text.setColor(textColor);
                 this.grid.find(c => c.row === row && c.col === col).notesText = [];
-            } else {
+            } else if(cell.mistakeValue !== null){
+                text.setText(cell.mistakeValue.toString());
+                text.setColor(this.errorColor);
+            }
+            else {
                 text.setText('');    
                 const notesTexts = this.createNotesText(cell, cellRect);
                 this.grid.find(c => c.row === row && c.col === col).notesText = notesTexts;
@@ -292,7 +350,7 @@ export class SudokuScene extends Phaser.Scene {
     }
 
     insertNumber(row, col, number) {
-        if (!this.board[row][col].isGiven) {
+        if (!this.board[row][col].isGiven && !this.board[row][col].mistakeValue) {
             if (!this.isNoteMode) {
                 if (this.solution[row][col].value === number) {
                     this.board[row][col].value = number;
@@ -309,14 +367,19 @@ export class SudokuScene extends Phaser.Scene {
                     })
                 }
                 else {
-                    console.log("Wrong Number");
-                    // simple Errorhandling (complex errorhandling is part of another Userstory)
-                    const cellRect = this.grid.find(c => c.row === row && c.col === col).cellRect;
-                    cellRect.setFillStyle(0xff6666);
-                    this.time.delayedCall(500, () => {
-                        cellRect.setFillStyle(this.highlightColor);
+                    this.puzzle.mistakes++;
+                    this.updateMistakeCounter();
+                    this.board[row][col].mistakeValue = number;
+                    
+                    // Shakes the number for a short time
+                    const cellText = this.grid.find(c => c.row === row && c.col === col).text;
+                    this.tweens.add({
+                        targets: cellText,
+                        x: cellText.x - 5,
+                        yoyo: true,
+                        repeat: 2,
+                        duration: 50
                     });
-                    return
                 }
             }
 
@@ -331,6 +394,17 @@ export class SudokuScene extends Phaser.Scene {
             this.highlightSelection(row, col);
             this.saveSudoku();
         }
+    }
+
+    eraseCell() {
+        if (!this.selectedCell) {
+            console.log('no cell selected');
+            return
+        }
+        const { row, col } = this.selectedCell;
+        this.board[row][col].notes = [];
+        this.board[row][col].mistakeValue = null;
+        this.updateGrid();
     }
 
     async saveSudoku() {
