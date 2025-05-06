@@ -49,12 +49,16 @@ export class SudokuScene extends Phaser.Scene {
         this.cameras.main.setBackgroundColor(this.basicBackgroundColor);
 
         this.apiService = new ApiService();
+        if (!this.puzzle) {
+            this.puzzle = generateSudoku(this.difficulty);
+            this.board = this.puzzle.currentBoard;
+            this.solution = this.puzzle.solvedBoard;
+        }
         this.puzzle = generateSudoku(this.difficulty);
         this.board = this.puzzle.currentBoard;
         this.solution = this.puzzle.solvedBoard;
         this.createGrid();
         this.createUI();
-        this.createTimer()
         this.authService = new AuthService();
         this.createErrorCounter();
         this.createDifficultyText();
@@ -107,6 +111,8 @@ export class SudokuScene extends Phaser.Scene {
                 
                 cellRect.on('pointerdown', () => {
                     this.selectedCell = { row, col };
+                    console.log(this.selectedCell)
+                    console.log()
                     this.highlightSelection(row, col);
                 });
 
@@ -547,6 +553,7 @@ export class SudokuScene extends Phaser.Scene {
         });
 
         buttonBg.on('pointerdown', () => {
+            this.shutdown();
             this.scene.start('MainMenuScene');
         });
     }
@@ -712,7 +719,31 @@ export class SudokuScene extends Phaser.Scene {
         } else {
             console.log('User not logged in — skipping save');
         }
+        this.shutdown();
         this.scene.start('MainMenuScene');
+    }
+
+    // Destroys all current objects/stored variables properly
+    shutdown() {
+        if (this.timerEvent) {
+            this.timerEvent.remove();
+        }
+        
+        if (this.grid) {
+            this.grid.forEach(({ cellRect, text, notesText }) => {
+                if (text) text.destroy();
+                if (cellRect) cellRect.destroy();
+                if (notesText) notesText.forEach(n => n.destroy());
+            });
+            this.grid = [];
+        }
+        
+        if (this.errorText) this.errorText.destroy();
+        if (this.timer) this.timer.destroy();
+        if (this.diffucultyText) this.diffucultyText.destroy();
+        
+        this.selectedCell = null;
+        this.isNoteMode = false;
     }
 
 
