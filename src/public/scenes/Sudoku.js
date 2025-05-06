@@ -57,7 +57,6 @@ export class SudokuScene extends Phaser.Scene {
         this.createTimer()
         this.authService = new AuthService();
         this.createErrorCounter();
-        this.createTimer();
         this.createDifficultyText();
         this.input.keyboard.on('keydown', (event) => {
             if (this.selectedCell) {
