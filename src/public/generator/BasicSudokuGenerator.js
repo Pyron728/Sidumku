@@ -286,7 +286,7 @@ function convert2DArrayToSudokuCellArray(puzzle) {
 
 function createSudoku(difficulty) {
   const generator = new SudokuGenerator();
-  const puzzleArray = generator.generate(difficulty);
+  const puzzleArray = generator.generate(difficulty.toLowerCase());
   const solutionArray = generator.getSolution();
 
   // Console log the sudoku

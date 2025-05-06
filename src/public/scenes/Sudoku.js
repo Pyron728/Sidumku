@@ -33,6 +33,10 @@ export class SudokuScene extends Phaser.Scene {
         this.errorColor = 'red';
     }
 
+    init(data) {
+        this.difficulty = data.difficulty; 
+    }
+
     preload() {
         // preload für Bilddaten und so shit
         this.load.image('pencil', 'assets/pencilmark.png');
@@ -44,13 +48,14 @@ export class SudokuScene extends Phaser.Scene {
         this.cameras.main.setBackgroundColor(this.basicBackgroundColor);
 
         this.apiService = new ApiService();
-        this.puzzle = generateSudoku('medium');
+        this.puzzle = generateSudoku(this.difficulty);
         this.board = this.puzzle.currentBoard;
         this.solution = this.puzzle.solvedBoard;
         this.createGrid();
         this.createUI();
-        this.createErrorCounter()
-        this.createTimer()
+        this.createErrorCounter();
+        this.createTimer();
+        this.createDifficultyText();
         this.input.keyboard.on('keydown', (event) => {
             if (this.selectedCell) {
                 if (/^[1-9]$/.test(event.key)) {
@@ -245,6 +250,20 @@ export class SudokuScene extends Phaser.Scene {
                 color: this.textColor
             }
         ).setOrigin(0, 0.5);
+    }
+
+    createDifficultyText(){
+        this.diffucultyText = this.add.text(
+            this.scale.width / 2 - 200,  
+            40,
+            this.difficulty,
+            {
+                fontSize: '24px',
+                fontFamily: 'Nunito',
+                fontWeight: '700',
+                color: this.textColor
+            }
+        ).setOrigin(1, 0.5);
     }
 
     updateMistakeCounter() {

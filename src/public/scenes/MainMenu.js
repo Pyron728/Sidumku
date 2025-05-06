@@ -42,7 +42,7 @@ export class MainMenuScene extends Phaser.Scene {
 
         const authService = new AuthService();
         const buttons = [
-            { label: 'Neues Spiel', scene: 'SudokuScene' }, 
+            { label: 'Neues Spiel', scene: 'DifficultyScene' }, 
         ];
 
         if (authService.isLoggedIn()) {
