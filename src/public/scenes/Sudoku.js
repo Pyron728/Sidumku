@@ -35,7 +35,7 @@ export class SudokuScene extends Phaser.Scene {
     preload() {
         // preload für Bilddaten und so shit
         this.load.image('pencil', 'assets/pencilmark.png');
-
+        this.load.image('logo_cow', 'assets/cow.png');
     }
 
     create() {
@@ -56,6 +56,7 @@ export class SudokuScene extends Phaser.Scene {
         });
         this.createSudokuInDb(this.puzzle);
         this.createBackToMenuButton();
+        this.createPauseButton();
     }
 
     createGrid() {
@@ -406,6 +407,7 @@ export class SudokuScene extends Phaser.Scene {
         selectedCell.cellRect.setFillStyle(this.highlightColor)
         this.selectedCell = { row, col };
     }
+
     createBackToMenuButton() {
         const buttonWidth = 180;
         const buttonHeight = 40;
@@ -455,6 +457,160 @@ export class SudokuScene extends Phaser.Scene {
         });
     }
 
+    createPauseButton() {
+        const buttonWidth = 180;
+        const buttonHeight = 40;
+        const radius = 10;
+
+        const x = this.scale.width - 100;
+        const y = 40;
+
+        const buttonBg = this.add.graphics();
+        buttonBg.fillStyle(this.secondaryColor, 1);
+        buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+        buttonBg.lineStyle(2, this.hoverColor);
+        buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+        buttonBg.setPosition(x, y);
+
+        const hitArea = new Phaser.Geom.Rectangle(
+            -buttonWidth / 2,
+            -buttonHeight / 2,
+            buttonWidth,
+            buttonHeight
+        );
+        buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
+
+        const buttonText = this.add.text(x, y, 'Pause', {
+            fontFamily: 'Nunito',
+            fontWeight: '700',
+            fontSize: '18px',
+            color: '#' + this.textColor.toString(16),
+        }).setOrigin(0.5);
+
+        buttonBg.on('pointerover', () => {
+            buttonBg.clear();
+            buttonBg.fillStyle(this.hoverColor, 1);
+            buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+            buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+        });
+
+        buttonBg.on('pointerout', () => {
+            buttonBg.clear();
+            buttonBg.fillStyle(this.secondaryColor, 1);
+            buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+            buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+        });
+
+        buttonBg.on('pointerdown', () => {
+            this.pauseGame();
+        });
+    }
+
+    pauseGame() {
+        this.timerEvent.paused = true;
+
+        this.pauseOverlay = this.add.rectangle(
+            this.scale.width / 2,
+            this.scale.height / 2,
+            this.scale.width,
+            this.scale.height,
+            0x000000,
+            0.4
+        ).setDepth(5);
+
+        this.pauseBlocker = this.add.rectangle(
+            this.scale.width / 2,
+            this.scale.height / 2,
+            this.scale.width,
+            this.scale.height,
+            0x000000,
+            0
+        ).setInteractive().setDepth(5);
+
+        const cowSize = 400;
+        this.pauseCows = [];
+
+        this.grid.forEach(({ cellRect }) => {
+            const cow = this.add.image(cellRect.x, cellRect.y, 'logo_cow')
+                .setDisplaySize(this.cellSize, this.cellSize)
+                .setDepth(6)
+
+            this.pauseCows.push(cow);
+        });
+
+        this.createPausePopupButtons();
+    }
+
+    createPausePopupButtons() {
+        const buttonWidth = 240;
+        const buttonHeight = 60;
+        const radius = 10;
+
+        const verticalCenter = this.gridY + (this.cellSize * 9 + 4 * 4) / 2;
+
+        const leftX = this.gridX - buttonWidth / 2 - 40;
+        const rightX = this.gridX + this.cellSize * 9 + 4 * 4 + buttonWidth / 2 + 40;
+
+        const buttons = [
+            { label: 'Continue', x: leftX, y: verticalCenter, callback: () => this.resumeGame() },
+            { label: 'Save & Exit', x: rightX, y: verticalCenter, callback: () => this.saveAndExit() }
+        ];
+
+        this.pauseButtons = buttons.map(({ label, x, y, callback }) => {
+            const buttonBg = this.add.graphics();
+            buttonBg.fillStyle(this.secondaryColor, 1);
+            buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+            buttonBg.lineStyle(2, this.hoverColor);
+            buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+            buttonBg.setPosition(x, y).setDepth(6);
+
+            const hitArea = new Phaser.Geom.Rectangle(
+                -buttonWidth / 2,
+                -buttonHeight / 2,
+                buttonWidth,
+                buttonHeight
+            );
+            buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
+
+            const buttonText = this.add.text(x, y, label, {
+                fontFamily: 'Nunito',
+                fontWeight: '700',
+                fontSize: '22px',
+                color: '#' + this.textColor.toString(16),
+            }).setOrigin(0.5).setDepth(6);
+
+            buttonBg.on('pointerover', () => {
+                buttonBg.clear();
+                buttonBg.fillStyle(this.hoverColor, 1);
+                buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+                buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+            });
+
+            buttonBg.on('pointerout', () => {
+                buttonBg.clear();
+                buttonBg.fillStyle(this.secondaryColor, 1);
+                buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+                buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
+            });
+
+            buttonBg.on('pointerdown', callback);
+
+            return { buttonBg, buttonText };
+        });
+    }
+
+
+    resumeGame() {
+        this.timerEvent.paused = false;
+
+        this.pauseOverlay.destroy();
+        this.pauseBlocker.destroy();
+        this.pauseCows.forEach(cow => cow.destroy());
+        this.pauseButtons.forEach(({ buttonBg, buttonText }) => {
+            buttonBg.destroy();
+            buttonText.destroy();
+        });
+    }
 
     update() {
         this.updateTimerDisplay()
