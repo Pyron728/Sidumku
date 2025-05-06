@@ -1,5 +1,6 @@
 import { generateSudoku } from '../generator/BasicSudokuGenerator.js';
 import { ApiService } from '../services/api.service.js';
+import {AuthService} from "../services/auth.service.js";
 
 export class SudokuScene extends Phaser.Scene {
     constructor() {
@@ -48,6 +49,7 @@ export class SudokuScene extends Phaser.Scene {
         this.createGrid();
         this.createUI();
         this.createTimer()
+        this.authService = new AuthService();
         this.input.keyboard.on('keydown', (event) => {
             if (this.selectedCell != null && /^[1-9]$/.test(event.key)) {
                 const { row, col } = this.selectedCell; 
@@ -330,7 +332,6 @@ export class SudokuScene extends Phaser.Scene {
             }
             this.updateGrid();
             this.highlightSelection(row, col);
-            this.saveSudoku();
         }
     }
 
@@ -611,6 +612,16 @@ export class SudokuScene extends Phaser.Scene {
             buttonText.destroy();
         });
     }
+
+    async saveAndExit() {
+        if (this.authService.isLoggedIn()) {
+            await this.saveSudoku();
+        } else {
+            console.log('User not logged in — skipping save');
+        }
+        this.scene.start('MainMenuScene');
+    }
+
 
     update() {
         this.updateTimerDisplay()
