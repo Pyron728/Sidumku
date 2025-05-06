@@ -54,7 +54,6 @@ export class SudokuScene extends Phaser.Scene {
         this.solution = this.puzzle.solvedBoard;
         this.createGrid();
         this.createUI();
-        this.createTimer()
         this.authService = new AuthService();
         this.createErrorCounter();
         this.createTimer();
