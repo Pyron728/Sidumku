@@ -43,6 +43,7 @@ export class SudokuScene extends Phaser.Scene {
         this.load.image('pencil', 'assets/pencilmark.png');
         this.load.image('logo_cow', 'assets/cow.png');
         this.load.image('eraser', 'assets/eraser.png');
+        this.load.image('martin', 'assets/martinscorsese.png')
     }
 
     create() {
@@ -59,6 +60,7 @@ export class SudokuScene extends Phaser.Scene {
         this.solution = this.puzzle.solvedBoard;
         this.createGrid();
         this.createUI();
+        this.createTimer();
         this.authService = new AuthService();
         this.createErrorCounter();
         this.createDifficultyText();
@@ -421,6 +423,15 @@ export class SudokuScene extends Phaser.Scene {
             this.updateGrid();
             this.highlightSelection(row, col);
         }
+
+        if (this.checkIfCompleted()) {
+            this.puzzle.solved = true;
+            this.showCompletionPopup();
+            if (this.authService.isLoggedIn()) {
+                this.saveSudoku(); // save solved status
+            }
+        }
+
     }
 
     eraseCell() {
@@ -723,7 +734,6 @@ export class SudokuScene extends Phaser.Scene {
         this.scene.start('MainMenuScene');
     }
 
-    // Destroys all current objects/stored variables properly
     shutdown() {
         if (this.timerEvent) {
             this.timerEvent.remove();
@@ -746,6 +756,136 @@ export class SudokuScene extends Phaser.Scene {
         this.isNoteMode = false;
     }
 
+    checkIfCompleted() {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                const current = this.board[row][col];
+                const solved = this.solution[row][col];
+                if (current.value !== solved.value) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    showCompletionPopup() {
+        this.timerEvent.paused = true;
+
+        const centerX = this.scale.width / 2;
+        const centerY = this.scale.height / 2;
+
+        const overlay = this.add.rectangle(centerX, centerY, this.scale.width, this.scale.height, 0x000000, 0.6)
+            .setDepth(10);
+
+        const inputBlocker = this.add.rectangle(
+            centerX, centerY, this.scale.width, this.scale.height, 0x000000, 0
+        ).setInteractive().setDepth(10);
+
+
+        const scorseseImage = this.add.image(centerX, centerY - 100, 'martin')
+            .setDisplaySize(300, 300)
+            .setDepth(11);
+
+        this.tweens.add({
+            targets: scorseseImage,
+            y: centerY - 120,
+            angle: {from: -10, to: 10},
+            duration: 300,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1
+        });
+
+        this.tweens.add({
+            targets: scorseseImage,
+            scale: {from: 1, to: 1.05},
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
+
+        const time = this.timer.text;
+        const mistakes = this.puzzle.mistakes;
+
+        const statsBg = this.add.graphics().setDepth(10);
+        statsBg.fillStyle(this.secondaryColor, 1);
+        statsBg.fillRoundedRect(centerX - 150, centerY + 100 - 40, 300, 80, 12);
+
+        const statsText = this.add.text(centerX, centerY + 100,
+            `Solved in ${time}\nMistakes: ${mistakes}`, {
+                fontFamily: 'Nunito',
+                fontSize: '26px',
+                fontWeight: '700',
+                align: 'center',
+                color: '#' + this.textColor.toString(16)
+            }).setOrigin(0.5).setDepth(11);
+
+        const buttonWidth = 240;
+        const buttonHeight = 60;
+        const buttonRadius = 10;
+
+        const menuButtonBg = this.add.graphics().setDepth(11);
+        menuButtonBg.fillStyle(this.secondaryColor, 1);
+        menuButtonBg.fillRoundedRect(
+            centerX - buttonWidth / 2,
+            centerY + 180 - buttonHeight / 2,
+            buttonWidth,
+            buttonHeight,
+            buttonRadius
+        );
+        menuButtonBg.lineStyle(2, this.hoverColor);
+        menuButtonBg.strokeRoundedRect(
+            centerX - buttonWidth / 2,
+            centerY + 180 - buttonHeight / 2,
+            buttonWidth,
+            buttonHeight,
+            buttonRadius
+        );
+
+        menuButtonBg.setInteractive(new Phaser.Geom.Rectangle(
+            centerX - buttonWidth / 2,
+            centerY + 180 - buttonHeight / 2,
+            buttonWidth,
+            buttonHeight
+        ), Phaser.Geom.Rectangle.Contains);
+
+        const menuButtonText = this.add.text(centerX, centerY + 180, 'Return to Menu', {
+            fontFamily: 'Nunito',
+            fontSize: '22px',
+            fontWeight: '700',
+            color: '#' + this.textColor.toString(16),
+        }).setOrigin(0.5).setDepth(12);
+
+// Hover effect
+        menuButtonBg.on('pointerover', () => {
+            menuButtonBg.clear();
+            menuButtonBg.fillStyle(this.hoverColor, 1);
+            menuButtonBg.fillRoundedRect(centerX - buttonWidth / 2, centerY + 180 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
+            menuButtonBg.strokeRoundedRect(centerX - buttonWidth / 2, centerY + 180 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
+        });
+
+        menuButtonBg.on('pointerout', () => {
+            menuButtonBg.clear();
+            menuButtonBg.fillStyle(this.secondaryColor, 1);
+            menuButtonBg.fillRoundedRect(centerX - buttonWidth / 2, centerY + 180 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
+            menuButtonBg.strokeRoundedRect(centerX - buttonWidth / 2, centerY + 180 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
+        });
+
+// Button click → shutdown and return
+        menuButtonBg.on('pointerdown', () => {
+            overlay.destroy();
+            inputBlocker.destroy();
+            scorseseImage.destroy();
+            statsBg.destroy();
+            statsText.destroy();
+            menuButtonBg.destroy();
+            menuButtonText.destroy();
+            this.shutdown();
+            this.scene.start('MainMenuScene');
+        });
+    }
 
     update() {
         this.updateTimerDisplay()
