@@ -13,6 +13,7 @@ export class SudokuScene extends Phaser.Scene {
         this.padding = 50;
         this.numberPadX = 380;
         this.numberPadY = 100;
+        this.availableHints = 3;
 
         // Updated colors based on the provided palette
         this.primaryColor = 0xFFFAED;      // Background color
@@ -43,7 +44,9 @@ export class SudokuScene extends Phaser.Scene {
         this.load.image('pencil', 'assets/pencilmark.png');
         this.load.image('logo_cow', 'assets/cow.png');
         this.load.image('eraser', 'assets/eraser.png');
-        this.load.image('martin', 'assets/martinscorsese.png')
+        this.load.image('martin', 'assets/martinscorsese.png');
+        this.load.image('lightbulb', 'assets/lightbulb.png');
+        this.load.image('star', 'assets/star.png');
     }
 
     create() {
@@ -58,6 +61,7 @@ export class SudokuScene extends Phaser.Scene {
         this.createTimer();
         this.authService = new AuthService();
         this.createErrorCounter();
+        this.createHintCounter();
         this.createDifficultyText();
         this.input.keyboard.on('keydown', (event) => {
             if (this.selectedCell) {
@@ -176,6 +180,39 @@ export class SudokuScene extends Phaser.Scene {
             updatePencilAppearance(false); 
         });
 
+        const hintXPosition = this.numberPadX + (this.cellSize + buttonSpacing) * 2;
+        const hintSize = this.cellSize / 1.5;
+        const hintButton = this.add.sprite(hintXPosition, iconYPosition, 'lightbulb')
+            .setDisplaySize(hintSize, hintSize)
+            .setInteractive()
+            .setTintFill(this.textColor)
+        hintButton.setScale(0.1);
+        
+        hintButton.on('pointerdown', () => {
+            if (this.availableHints > 0) {
+                this.giveHint()
+            } else {
+                this.tweens.killTweensOf(hintButton);
+                hintButton.x = hintXPosition;
+                this.tweens.add({
+                    targets: hintButton,
+                    x: hintButton.x - 5,
+                    yoyo: true,
+                    repeat: 2,
+                    duration: 50
+                });
+            }
+        });
+        
+        hintButton.on('pointerover', () => {
+            hintButton.setTintFill(this.hoverColor);
+        });
+        
+        hintButton.on('pointerout', () => {
+            hintButton.setTintFill(this.textColor);
+
+        });
+
         const eraserXPosition = this.numberPadX;
         const eraserSize = this.cellSize / 1.5;
         const eraser = this.add.sprite(eraserXPosition, iconYPosition, 'eraser').
@@ -257,10 +294,25 @@ export class SudokuScene extends Phaser.Scene {
         ).setOrigin(0, 0.5);
     }
 
+    createHintCounter() {
+        this.hintText = this.add.text(
+            this.scale.width / 2 - 300,  // Position it right from the mistakes counter
+            40,
+            'Hints left: ' + this.availableHints.toString(),
+            {
+                fontSize: '24px',
+                fontFamily: 'Nunito',
+                fontWeight: '700',
+                color: this.textColor
+            }
+        ).setOrigin(0, 0.5);
+    }
+    
+
     createDifficultyText(){
         this.diffucultyText = this.add.text(
-            this.scale.width / 2 - 200,  
-            40,
+            this.scale.width / 2,  
+            this.scale.height - 50,
             this.difficulty,
             {
                 fontSize: '24px',
@@ -282,6 +334,90 @@ export class SudokuScene extends Phaser.Scene {
             yoyo: true,
             ease: 'Sine.easeInOut'
         });
+    }
+
+    updateHintCounter() {
+        this.hintText.setText(`Hints left: ${this.availableHints}`);
+    
+        // Animation für den Hinweis-Zähler
+        this.tweens.add({
+            targets: this.hintText,
+            scale: 1.1,
+            duration: 150,
+            yoyo: true,
+            ease: 'Sine.easeInOut'
+        });
+    }
+    
+    playHintAnimation(row, col) {
+        const cellIdx = row * 9 + col;
+        const cellText = this.grid[cellIdx].text;
+        const cellRect = this.grid[cellIdx].cellRect;
+        const cell = this.grid.find(c => c.row === row && c.col === col);
+
+        
+        // Funkelnde Sterne um die Zahl herum
+        for (let i = 0; i < 3; i++) {
+            const star = this.add.sprite(
+                cellRect.x + (Math.random() - 0.5) * this.cellSize, 
+                cellRect.y + (Math.random() - 0.5) * this.cellSize, 
+                'star'
+            ).setDisplaySize(0.5, 0.5).setDepth(5);
+            
+            // Stern-Animation
+            this.tweens.add({
+                targets: star,
+                scale: { from: 0.1, to: 0.4 },
+                alpha: { from: 1, to: 0 },
+                duration: 1500,
+                ease: 'Sine.easeOut',
+                onComplete: () => star.destroy()
+            });
+        }
+        cellText.setColor(this.newNumberColor);
+    }
+
+    giveHint() {
+        // Korrekte Zahl aus der Lösung holen
+        let hintCellValue = 1;
+        let row = 0;
+        let col = 0;
+
+        while (hintCellValue) {
+            row = Math.floor(Math.random() * 9);
+            col = Math.floor(Math.random() * 9);
+            console.log(this.board)
+            console.log(row)
+            console.log(col)
+            console.log(this.board[row][col]);
+            console.log(this.board[row][col].value);
+
+            hintCellValue = this.board[row][col].value;
+        }
+
+        const correctValue = this.solution[row][col].value;
+        // Zahl einfügen und Animation starten
+        this.board[row][col].value = correctValue;
+        
+        // Hinweis verbrauchen
+        this.availableHints--;
+        this.updateHintCounter();
+        
+        // Animation für die Hinweiszahl
+        this.playHintAnimation(row, col);
+        
+        // Grid updaten und Auswahl neu markieren
+        this.updateGrid();
+        this.highlightSelection(row, col);
+        
+        // Prüfen ob Spiel gewonnen wurde
+        if (this.checkIfCompleted()) {
+            this.puzzle.solved = true;
+            this.showCompletionPopup();
+            if (this.authService.isLoggedIn()) {
+                this.saveSudoku();
+            }
+        }
     }
 
     createTimer(){
@@ -602,11 +738,10 @@ export class SudokuScene extends Phaser.Scene {
         const buttonHeight = 60;
         const radius = 10;
 
-        const verticalCenter = this.gridY + (this.cellSize * 9 + 4 * 4) / 2;
+        const verticalCenter = this.gridY - 4 + (this.cellSize * 8 + 4 * 4) / 2;
 
         const leftX = this.gridX - buttonWidth / 2 - 40;
         const rightX = this.gridX + this.cellSize * 9 + 4 * 4 + buttonWidth / 2 + 40;
-
         const buttons = [
             { label: 'Continue', x: leftX, y: verticalCenter, callback: () => this.resumeGame() },
             { label: 'Save & Exit', x: rightX, y: verticalCenter, callback: () => this.saveAndExit() }
