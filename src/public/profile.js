@@ -28,6 +28,8 @@ async function fetchAndDisplayProfile() {
     for (const [level, count] of Object.entries(stats.difficultyCount)) {
         const div = document.createElement("div");
         div.textContent = `${level}: ${count}`;
+        div.style.fontWeight = "600";
+        div.style.color = "var(--accent-color)";
         container.appendChild(div);
     }
 }
@@ -62,7 +64,7 @@ function extractStats(sudokuList) {
         won: stats.won,
         bestTime: isFinite(stats.bestTime) ? stats.bestTime + "s" : "–",
         avgHints: avg(stats.totalHints),
-        avgTime: avg(stats.totalTime),
+        avgTime: avg(stats.totalTime) + "s",
         avgMistakes: avg(stats.totalMistakes),
         difficultyCount: stats.difficultyCount
     };
