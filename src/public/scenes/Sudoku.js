@@ -602,7 +602,7 @@ export class SudokuScene extends Phaser.Scene {
         const buttonHeight = 60;
         const radius = 10;
 
-        const verticalCenter = this.gridY + (this.cellSize * 9 + 4 * 4) / 2;
+        const verticalCenter = this.gridY - 4 + (this.cellSize * 8 + 4 * 4) / 2;
 
         const leftX = this.gridX - buttonWidth / 2 - 40;
         const rightX = this.gridX + this.cellSize * 9 + 4 * 4 + buttonWidth / 2 + 40;
@@ -726,7 +726,6 @@ export class SudokuScene extends Phaser.Scene {
             centerX, centerY, this.scale.width, this.scale.height, 0x000000, 0
         ).setInteractive().setDepth(10);
 
-
         const scorseseImage = this.add.image(centerX, centerY - 100, 'martin')
             .setDisplaySize(300, 300)
             .setDepth(11);
@@ -802,7 +801,6 @@ export class SudokuScene extends Phaser.Scene {
             color: '#' + this.textColor.toString(16),
         }).setOrigin(0.5).setDepth(12);
 
-// Hover effect
         menuButtonBg.on('pointerover', () => {
             menuButtonBg.clear();
             menuButtonBg.fillStyle(this.hoverColor, 1);
@@ -817,7 +815,6 @@ export class SudokuScene extends Phaser.Scene {
             menuButtonBg.strokeRoundedRect(centerX - buttonWidth / 2, centerY + 180 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
         });
 
-// Button click → shutdown and return
         menuButtonBg.on('pointerdown', () => {
             overlay.destroy();
             inputBlocker.destroy();
