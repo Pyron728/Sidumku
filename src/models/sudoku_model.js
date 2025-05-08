@@ -56,6 +56,10 @@ export async function getSudokuFromUser(playerId) {
   return await sudokuDb.findAsync({ playerId: playerId }).sort({ updatedAt: -1 });
 }
 
+export async function getAllSudoku() {
+  return await sudokuDb.findAsync({}).sort({ updatedAt: -1 });
+}
+
 /**
  * Gets a specific Sudoku game by its ID
  * @param {string} sudokuId - The ID of the Sudoku game

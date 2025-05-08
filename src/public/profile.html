@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="assets/cow.png" rel="icon" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Sudoku Profile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header"></header>  
+    <script type="module" src="./src/public/header.js"></script>
+    <div class="profile">
+        <h2>Profile of <span id="username"></span></h2>
+        <div class="stat">Games Won: <span id="gamesWon">–</span></div>
+        <div class="stat">Best Time: <span id="bestTime">–</span></div>
+        <div class="stat">Average Hints: <span id="avgHints">–</span></div>
+        <div class="stat">Average Time: <span id="avgTime">–</span></div>
+        <div class="stat">Average Errors: <span id="avgErrors">–</span></div>
+        <div class="stat">
+            Played Games by Difficulty:
+            <div class="difficulty-stats" id="difficultyBreakdown"></div>
+        </div>
+    </div>
+
+    <script type="module" src="profile.js"></script>
+</body>
+</html>
