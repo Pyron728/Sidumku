@@ -302,7 +302,7 @@ function createSudoku(difficulty) {
 
   const sudokuObject = {
     _id: gameId,
-    playerId: '123456789', //For Test Purposes while we have no user-system
+    playerId: localStorage.getItem("id") ? localStorage.getItem("id") : 'abc123',
     difficulty: difficulty,
     mistakes: 0,
     hintsUsed: 0,
