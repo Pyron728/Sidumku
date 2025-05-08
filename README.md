@@ -29,31 +29,6 @@ npm install
 ```
 
 ### 3. Spiel starten
-
-#### 3.1 Mit dem Phaser Launcher starten:
-- Installiere den [Phaser Launcher](https://phaser.io/download/phaser-launcher)
-- Registrier dich bei Phaser und logge dich damit ein
-- Gehe auf der Startpage rechts auf Projects und importiere das vorher geklonte Projekt 
-- Öffne das Projekt und klicke oben auf das Play-Symbol 
-- Falls die Szene konstant neulädt, versuche das Game ohne den Phaser Launcher in 3.2 beschrieben zu starten.
-
-#### 3.2 Ohne dem Phaser Launcher starten:
-- Phaser benötigt einen Webserver, da moderne Browser `file://`-Zugriffe oft blockieren. Dies macht der Phaser Launcher automatisch. Wir nutzen das npm package `http-server`. 
-
-- Starte den Server mit:
-```sh
-npx http-server .
-```
-- Nach dem Start erscheint eine Ausgabe wie:
-```
-Starting up http-server, serving ./
-Available on:
-  http://localhost:8080
-```
-- Öffne nun [http://localhost:8080](http://localhost:8080) im Browser
-- Falls du Änderungen im Code vornimmst, drücke Strg + F5 im Browser, um einen force reload zu machen.
-
-### 4. Backend starten
 -  gehe im Terminal auf die `\sidumku\src` Ebene.
 
 -  Starte den Server mit:
@@ -66,8 +41,8 @@ nicoamann@Nico-MacBookAir src % node server.js
 ✅ Server läuft auf: http://localhost:3000
 ```
 
-- Backend kann nun über UI oder Insomnia getestet werden
-- In der IDE erscheint `user.db`, in der die Daten lokal gespeichert werden
+- Backend kann über UI oder Insomnia getestet werden
+- In der IDE erscheint `user.db` und `sudoku.db`, in der die Daten lokal gespeichert werden
 - Falls die Datebank gelöscht werden soll:
 ```sh
 rm user.db
