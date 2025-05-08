@@ -65,12 +65,30 @@ export class SudokuScene extends Phaser.Scene {
         this.createDifficultyText();
         this.input.keyboard.on('keydown', (event) => {
             if (this.selectedCell) {
+                const { row, col } = this.selectedCell; 
                 if (/^[1-9]$/.test(event.key)) {
-                    const { row, col } = this.selectedCell; 
                     this.insertNumber(row, col, parseInt(event.key));
                 }
                 else if(event.key == ('Backspace' || 'Delete')){
                     this.eraseCell();
+                }
+                // Arrow keys and WASD for navigation
+                else if (event.key === 'ArrowUp' || event.key === 'w') {
+                    this.moveSelection(row - 1, col);
+                }
+                else if (event.key === 'ArrowDown' || event.key === 's') {
+                    this.moveSelection(row + 1, col);
+                }
+                else if (event.key === 'ArrowLeft' || event.key === 'a') {
+                    this.moveSelection(row, col - 1);
+                }
+                else if (event.key === 'ArrowRight' || event.key === 'd') {
+                    this.moveSelection(row, col + 1);
+                }
+            }
+            else {
+                if (/^[1-9]$/.test(event.key)) {
+                    this.highlightOnlyNumbersAndNotes(parseInt(event.key));
                 }
             }
         });
@@ -111,8 +129,6 @@ export class SudokuScene extends Phaser.Scene {
                 
                 cellRect.on('pointerdown', () => {
                     this.selectedCell = { row, col };
-                    console.log(this.selectedCell)
-                    console.log()
                     this.highlightSelection(row, col);
                 });
 
@@ -231,6 +247,8 @@ export class SudokuScene extends Phaser.Scene {
             eraser.setTintFill(this.textColor);
         });
 
+        this.numberButtons = {}; // key: number string, value: { bg, text }
+
         numbers.forEach((row, rowIndex) => {
             row.forEach((button, colIndex) => {
                 const x = this.numberPadX + colIndex * (this.cellSize + 10);
@@ -260,7 +278,7 @@ export class SudokuScene extends Phaser.Scene {
                 );
                 buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
 
-                this.add.text(x, y, button, {
+                const buttonText = this.add.text(x, y, button, {
                     fontFamily: 'Nunito',
                     fontSize: '32px',
                     fontWeight: '700',
@@ -273,11 +291,29 @@ export class SudokuScene extends Phaser.Scene {
                 buttonBg.on('pointerdown', () => {
                     if (this.selectedCell) {
                         const { row, col } = this.selectedCell;
-                        this.insertNumber(row, col, parseInt(button));
+                        if (this.board[row][col].value == null) {
+                            this.insertNumber(row, col, parseInt(button));     
+                        }
+                        else {
+                            this.highlightOnlyNumbersAndNotes(parseInt(button))
+                        }
+                    }
+                    else {
+                        this.highlightOnlyNumbersAndNotes(parseInt(button))
                     }
                 });
+
+            this.numberButtons[button] = { bg: buttonBg, text: buttonText };
+
             });
         });
+        // Check if the board contains already 9 of the any number and block the button then
+        for (let number = 1; number < 9; number++) {
+            const count = this.board.flat().filter(cell => cell.value === number).length;   
+            if (count === 9) {
+                this.disableNumberButtons(number)
+            }       
+        }
     }
 
     createErrorCounter() {
@@ -396,21 +432,16 @@ export class SudokuScene extends Phaser.Scene {
         }
 
         const correctValue = this.solution[row][col].value;
-        // Zahl einfügen und Animation starten
         this.board[row][col].value = correctValue;
         
-        // Hinweis verbrauchen
         this.availableHints--;
         this.updateHintCounter();
         
-        // Animation für die Hinweiszahl
         this.playHintAnimation(row, col);
         
-        // Grid updaten und Auswahl neu markieren
         this.updateGrid();
         this.highlightSelection(row, col);
         
-        // Prüfen ob Spiel gewonnen wurde
         if (this.checkIfCompleted()) {
             this.puzzle.solved = true;
             this.showCompletionPopup();
@@ -525,6 +556,12 @@ export class SudokuScene extends Phaser.Scene {
                             }
                         });
                     })
+
+                    // Check if the board contains 9 of the numbers
+                    const count = this.board.flat().filter(cell => cell.value === number).length;   
+                    if (count === 9) {
+                        this.disableNumberButtons(number)
+                    }
                 }
                 else {
                     this.puzzle.mistakes++;
@@ -586,21 +623,17 @@ export class SudokuScene extends Phaser.Scene {
         console.log(savedGame ? 'Created Game in Database for the first time': ('Error while creating Game in Database for the first time: ' + savedGame));
     }
 
+    moveSelection(row, col) {
+        if (row >= 0 && row < 9 && col >= 0 && col < 9) {
+            this.selectedCell = { row, col };
+            this.highlightSelection(row, col);
+        }
+    }
+
     highlightSelection(row, col) {
         const selectedValue = this.board[row][col].value;
-        
-        //Resets all cell backgrounds and note highlights
-        this.grid.forEach(({ cellRect, notesText }) => {
-            cellRect.setFillStyle(this.basicBackgroundColor);
-            if (notesText) {
-                notesText.forEach(noteText => {
-                    if (noteText.borderGraphics) {
-                        noteText.borderGraphics.destroy();
-                        noteText.borderGraphics = null;
-                    }
-                });
-            }
-        });
+
+        this.highlightOnlyNumbersAndNotes(selectedValue);
 
         this.grid.forEach(({ cellRect, cell, notesText }, index) => {
             const gridRow = Math.floor(index / 9);
@@ -611,14 +644,39 @@ export class SudokuScene extends Phaser.Scene {
                 cellRect.setFillStyle(this.highlightSameRowAndLineAndSquareColor);
             }
 
-            //Highlight same numbers in the entire sudoku
-            if (cell.value !== null && cell.value === selectedValue) {
-                cellRect.setFillStyle(this.highlightMatchingNumberColor);
-            }
-
             // Highlight same Sudoku-square
             if(Math.floor(row / 3) === Math.floor(gridRow / 3) && Math.floor(col / 3) === Math.floor(gridCol / 3)) {
                 cellRect.setFillStyle(this.highlightSameRowAndLineAndSquareColor);
+            }
+        });
+
+        this.grid.forEach(({ cellRect }) => {
+            cellRect.savedColor = cellRect.fillColor;
+        });
+
+        const selectedCell = this.grid[row * 9 + col];
+        selectedCell.cellRect.setFillStyle(this.highlightColor)
+        this.selectedCell = { row, col };
+    }
+
+    highlightOnlyNumbersAndNotes(selectedValue){
+
+        this.grid.forEach(({ cellRect, cell, notesText }) => {
+
+            //Resets all cell backgrounds and note highlights
+            cellRect.setFillStyle(this.basicBackgroundColor);
+            if (notesText) {
+                notesText.forEach(noteText => {
+                    if (noteText.borderGraphics) {
+                        noteText.borderGraphics.destroy();
+                        noteText.borderGraphics = null;
+                    }
+                });
+            }
+
+            //Highlight same numbers in the entire sudoku
+            if (cell.value !== null && cell.value === selectedValue) {
+                cellRect.setFillStyle(this.highlightMatchingNumberColor);
             }
 
             // Highlight notes that match the selected value
@@ -639,14 +697,6 @@ export class SudokuScene extends Phaser.Scene {
                 });
             }
         });
-
-        this.grid.forEach(({ cellRect }) => {
-            cellRect.savedColor = cellRect.fillColor;
-        });
-
-        const selectedCell = this.grid[row * 9 + col];
-        selectedCell.cellRect.setFillStyle(this.highlightColor)
-        this.selectedCell = { row, col };
     }
 
     createPauseButton() {
@@ -696,6 +746,19 @@ export class SudokuScene extends Phaser.Scene {
         buttonBg.on('pointerdown', () => {
             this.pauseGame();
         });
+    }
+
+    disableNumberButtons(number) {
+            const btn = this.numberButtons[number];
+            btn.bg.disableInteractive();
+            btn.text.setColor('#888');
+            btn.bg.clear();
+            btn.bg.fillStyle(0xcccccc, 1);
+            console.log('deactivating button', number)
+    
+            btn.bg.lineStyle(2, this.hoverColor);
+            btn.bg.fillRoundedRect(-this.cellSize / 2, -this.cellSize / 2, this.cellSize, this.cellSize, 10);
+            btn.bg.strokeRoundedRect(-this.cellSize / 2, -this.cellSize / 2, this.cellSize, this.cellSize, 10);      
     }
 
     pauseGame() {
