@@ -1,6 +1,6 @@
     const footer = document.createElement("footer");
     footer.id = "footer";
-    footer.innerText = "© 2025 Sidumku – Patrick, Danilo & Nico. Alle Rechte vorbehalten.";
+    footer.innerText = "© 2025 Sidumku – Patrick, Danilo & Nico. All rights reserved.";
     document.body.appendChild(footer);
 
     const style = document.createElement("style");
