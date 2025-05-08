@@ -29,7 +29,7 @@ export class Register {
                 return true;
             }
         } catch (error) {
-            usernameError.textContent = 'Fehler beim Registrieren: ' + error.message;
+            usernameError.textContent = 'Error when registrating: A user with this name already exists';
             usernameError.classList.add('visible');
         }
         return false;

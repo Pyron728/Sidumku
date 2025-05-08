@@ -29,7 +29,7 @@ export class Login {
                 return true;
             }
         } catch (error) {
-            usernameError.textContent = 'Fehler beim Login: ' + error.message;
+            usernameError.textContent = 'Error at Login: ' + error.message;
             usernameError.classList.add('visible');
         }
         return false;
