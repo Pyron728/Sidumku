@@ -58,7 +58,7 @@ input:focus {
     background-color: #fff;
 }
 
-button {
+form button {
     margin-top: 1.5rem;
     padding: 0.75rem 1rem;
     width: 109%;
@@ -172,4 +172,68 @@ p, .text {
 form a {
     color: #1a73e8;
     text-decoration: underline;
+}
+
+.profile {
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+}
+
+.profile h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.stat {
+    background-color: #fff;
+    border: 2px solid var(--tertiary-color);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.stat:hover {
+    background-color: var(--tertiary-color);
+    transform: scale(1.02);
+}
+
+.stat span {
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+.difficulty-stats {
+    margin-top: 0.75rem;
+    padding-left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+#avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0;
+    line-height: 40px;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    box-sizing: border-box;
 }

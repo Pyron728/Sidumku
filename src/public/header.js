@@ -127,7 +127,7 @@ header.innerHTML = `
     }
 
     .dropdown-item {
-        padding: 12px 16px;
+        padding: 8px 16px;
         color: #32383C;
         cursor: pointer;
         transition: background 0.2s ease;
@@ -140,7 +140,6 @@ header.innerHTML = `
     .dropdown-divider {
         height: 1px;
         background: #DACDAA;
-        margin: 6px 0;
     }
 
     #avatar {
@@ -198,7 +197,7 @@ header.innerHTML = `
     .header-buttons {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
         flex-wrap: nowrap;
     }
 </style>
@@ -215,7 +214,6 @@ header.innerHTML = `
                 <div id="avatar">${username.charAt(0).toUpperCase()}</div>
                 <div id="dropdown" style="display: none;">
                     <div class="dropdown-item" onclick="window.location.href='/profile'">Profile</div>
-                    <div class="dropdown-item" onclick="headerClass.toggleDarkMode()">Dark Mode</div>
                     <div class="dropdown-item" onclick="headerClass.logout()">Logout</div>
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-item" onclick="headerClass.showDeleteModal()">Delete Account</div>                    
