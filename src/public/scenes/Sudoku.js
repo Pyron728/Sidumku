@@ -50,11 +50,6 @@ export class SudokuScene extends Phaser.Scene {
         this.cameras.main.setBackgroundColor(this.basicBackgroundColor);
 
         this.apiService = new ApiService();
-        if (!this.puzzle) {
-            this.puzzle = generateSudoku(this.difficulty);
-            this.board = this.puzzle.currentBoard;
-            this.solution = this.puzzle.solvedBoard;
-        }
         this.puzzle = generateSudoku(this.difficulty);
         this.board = this.puzzle.currentBoard;
         this.solution = this.puzzle.solvedBoard;
