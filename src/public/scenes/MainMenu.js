@@ -42,11 +42,11 @@ export class MainMenuScene extends Phaser.Scene {
 
         const authService = new AuthService();
         const buttons = [
-            { label: 'Neues Spiel', scene: 'DifficultyScene' }, 
+            { label: 'New Game', scene: 'DifficultyScene' }, 
         ];
 
         if (authService.isLoggedIn()) {
-            buttons.push({ label: 'Pausiert' });
+            buttons.push({ label: 'Paused Games' });
         } 
 
         const buttonHeight = 60;

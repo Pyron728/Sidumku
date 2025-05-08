@@ -76,7 +76,6 @@ export class SudokuScene extends Phaser.Scene {
             }
         });
         this.createSudokuInDb(this.puzzle);
-        this.createBackToMenuButton();
         this.createPauseButton();
     }
 
@@ -517,56 +516,6 @@ export class SudokuScene extends Phaser.Scene {
         const selectedCell = this.grid[row * 9 + col];
         selectedCell.cellRect.setFillStyle(this.highlightColor)
         this.selectedCell = { row, col };
-    }
-
-    createBackToMenuButton() {
-        const buttonWidth = 180;
-        const buttonHeight = 40;
-        const radius = 10;
-
-        const x = 100;
-        const y = 40;
-
-        const buttonBg = this.add.graphics();
-        buttonBg.fillStyle(this.secondaryColor, 1);
-        buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
-        buttonBg.lineStyle(2, this.hoverColor);
-        buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
-        buttonBg.setPosition(x, y);
-
-        const hitArea = new Phaser.Geom.Rectangle(
-            -buttonWidth / 2,
-            -buttonHeight / 2,
-            buttonWidth,
-            buttonHeight
-        );
-        buttonBg.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
-
-        const buttonText = this.add.text(x, y, 'Main Menu', {
-            fontFamily: 'Nunito',
-            fontWeight: '700',
-            fontSize: '18px',
-            color: '#' + this.textColor.toString(16),
-        }).setOrigin(0.5);
-
-        buttonBg.on('pointerover', () => {
-            buttonBg.clear();
-            buttonBg.fillStyle(this.hoverColor, 1);
-            buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
-            buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
-        });
-
-        buttonBg.on('pointerout', () => {
-            buttonBg.clear();
-            buttonBg.fillStyle(this.secondaryColor, 1);
-            buttonBg.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
-            buttonBg.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, radius);
-        });
-
-        buttonBg.on('pointerdown', () => {
-            this.shutdown();
-            this.scene.start('MainMenuScene');
-        });
     }
 
     createPauseButton() {
