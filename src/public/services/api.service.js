@@ -42,8 +42,8 @@ export class ApiService {
   }
 
   // Sudoku-related API methods
-  async getAllSudokus() {
-    return await this.apiRequest('sudoku');
+  async getAllSudokus(username, password) {
+    return await this.apiRequest('sudoku', undefined, 'GET', username, password);
   }
 
   async getSudokuById(sudokuId) {

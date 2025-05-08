@@ -46,8 +46,8 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(publicPath, 'login.html'));
 });
 
-app.get('/account', (req, res) => {
-  res.sendFile(path.join(publicPath, 'account.html'));
+app.get('/profile', (req, res) => {
+  res.sendFile(path.join(publicPath, 'profile.html'));
 });
 
 // 🚀 Server starten
