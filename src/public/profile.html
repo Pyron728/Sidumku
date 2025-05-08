@@ -1,50 +1,25 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="assets/cow.png" rel="icon" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    <title>Sudoku Profil</title>
+    <title>Sudoku Profile</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f9f9f9;
-        }
-        .profile {
-            max-width: 600px;
-            margin: auto;
-            background: #fff;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h2 {
-            margin-top: 0;
-            color: #333;
-        }
-        .stat {
-            margin: 12px 0;
-            font-size: 16px;
-        }
-        .difficulty-stats {
-            margin-left: 20px;
-            margin-top: 8px;
-        }
-    </style>
 </head>
 <body>
+    <header id="header"></header>  
+    <script type="module" src="./src/public/header.js"></script>
     <div class="profile">
-        <h2>Profil von <span id="username">Lade...</span></h2>
-        <div class="stat">Gewonnene Spiele: <span id="gamesWon">–</span></div>
-        <div class="stat">Bestzeit: <span id="bestTime">–</span></div>
-        <div class="stat">Durchschnittliche Hinweise: <span id="avgHints">–</span></div>
-        <div class="stat">Durchschnittliche Zeit: <span id="avgTime">–</span></div>
-        <div class="stat">Durchschnittliche Fehler: <span id="avgErrors">–</span></div>
+        <h2>Profile of <span id="username">Loading...</span></h2>
+        <div class="stat">Games Won: <span id="gamesWon">–</span></div>
+        <div class="stat">Best Time: <span id="bestTime">–</span></div>
+        <div class="stat">Average Hints: <span id="avgHints">–</span></div>
+        <div class="stat">Average Time: <span id="avgTime">–</span></div>
+        <div class="stat">Average Errors: <span id="avgErrors">–</span></div>
         <div class="stat">
-            Aufteilung nach Schwierigkeit:
+            Breakdown by Difficulty:
             <div class="difficulty-stats" id="difficultyBreakdown"></div>
         </div>
     </div>
