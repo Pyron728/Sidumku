@@ -950,10 +950,10 @@ export class SudokuScene extends Phaser.Scene {
 
         const statsBg = this.add.graphics().setDepth(10);
         statsBg.fillStyle(this.secondaryColor, 1);
-        statsBg.fillRoundedRect(centerX - 150, centerY + 100 - 40, 300, 80, 12);
+        statsBg.fillRoundedRect(centerX - 150, centerY + 100 - 40, 300, 95, 12);
 
-        const statsText = this.add.text(centerX, centerY + 100,
-            `Solved in ${time}\nMistakes: ${mistakes}`, {
+        const statsText = this.add.text(centerX, centerY + 105,
+            `Solved in ${time}\nMistakes: ${mistakes}\nHints used: ${this.puzzle.hintsUsed}`, {
                 fontFamily: 'Nunito',
                 fontSize: '26px',
                 fontWeight: '700',
@@ -969,7 +969,7 @@ export class SudokuScene extends Phaser.Scene {
         menuButtonBg.fillStyle(this.secondaryColor, 1);
         menuButtonBg.fillRoundedRect(
             centerX - buttonWidth / 2,
-            centerY + 180 - buttonHeight / 2,
+            centerY + 190 - buttonHeight / 2,
             buttonWidth,
             buttonHeight,
             buttonRadius
@@ -977,7 +977,7 @@ export class SudokuScene extends Phaser.Scene {
         menuButtonBg.lineStyle(2, this.hoverColor);
         menuButtonBg.strokeRoundedRect(
             centerX - buttonWidth / 2,
-            centerY + 180 - buttonHeight / 2,
+            centerY + 190 - buttonHeight / 2,
             buttonWidth,
             buttonHeight,
             buttonRadius
@@ -985,12 +985,12 @@ export class SudokuScene extends Phaser.Scene {
 
         menuButtonBg.setInteractive(new Phaser.Geom.Rectangle(
             centerX - buttonWidth / 2,
-            centerY + 180 - buttonHeight / 2,
+            centerY + 190 - buttonHeight / 2,
             buttonWidth,
             buttonHeight
         ), Phaser.Geom.Rectangle.Contains);
 
-        const menuButtonText = this.add.text(centerX, centerY + 180, 'Return to Menu', {
+        const menuButtonText = this.add.text(centerX, centerY + 190, 'Return to Menu', {
             fontFamily: 'Nunito',
             fontSize: '22px',
             fontWeight: '700',
@@ -1000,15 +1000,15 @@ export class SudokuScene extends Phaser.Scene {
         menuButtonBg.on('pointerover', () => {
             menuButtonBg.clear();
             menuButtonBg.fillStyle(this.hoverColor, 1);
-            menuButtonBg.fillRoundedRect(centerX - buttonWidth / 2, centerY + 180 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
-            menuButtonBg.strokeRoundedRect(centerX - buttonWidth / 2, centerY + 180 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
+            menuButtonBg.fillRoundedRect(centerX - buttonWidth / 2, centerY + 190 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
+            menuButtonBg.strokeRoundedRect(centerX - buttonWidth / 2, centerY + 190 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
         });
 
         menuButtonBg.on('pointerout', () => {
             menuButtonBg.clear();
             menuButtonBg.fillStyle(this.secondaryColor, 1);
-            menuButtonBg.fillRoundedRect(centerX - buttonWidth / 2, centerY + 180 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
-            menuButtonBg.strokeRoundedRect(centerX - buttonWidth / 2, centerY + 180 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
+            menuButtonBg.fillRoundedRect(centerX - buttonWidth / 2, centerY + 190 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
+            menuButtonBg.strokeRoundedRect(centerX - buttonWidth / 2, centerY + 190 - buttonHeight / 2, buttonWidth, buttonHeight, buttonRadius);
         });
 
         menuButtonBg.on('pointerdown', () => {
