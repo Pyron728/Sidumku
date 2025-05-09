@@ -19,17 +19,17 @@
     <form id="loginForm">
         <h2>Login</h2>
 
-        <input type="text" id="username" placeholder="Benutzername" required 
+        <input type="text" id="username" placeholder="username" required 
             pattern="^[a-zA-Z0-9_]{4,16}$" 
-            title="Benutzername muss 4–16 Zeichen lang sein und darf nur Buchstaben, Zahlen und Unterstriche enthalten.">
+            title="Username must be 4–16 characters long and may contain only letters, numbers, and underscores.">
 
-        <input type="password" id="password" placeholder="Passwort" required 
+        <input type="password" id="password" placeholder="password" required 
             pattern=".{6,}" 
-            title="Passwort muss mindestens 6 Zeichen lang sein.">
+            title="Passwort must be at least 6 characters long.">
 
         <p id="usernameError" class="error"> </p>
         <button type="submit">Login</button>
-        <p>Noch keinen Account? <a href="/register">Registrieren</a></p>
+        <p>Don't have an account yet? <a href="/register">Register</a></p>
     </form>
     <script type="module" src="/login.js"></script>
 </body>
