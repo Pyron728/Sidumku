@@ -13,7 +13,6 @@ export class SudokuScene extends Phaser.Scene {
         this.padding = 50;
         this.numberPadX = 380;
         this.numberPadY = 100;
-        this.availableHints = 3;
 
         // Updated colors based on the provided palette
         this.primaryColor = 0xFFFAED;      // Background color
@@ -61,6 +60,7 @@ export class SudokuScene extends Phaser.Scene {
         this.createTimer();
         this.authService = new AuthService();
         this.createErrorCounter();
+        this.availableHints = 3 - this.puzzle.hintsUsed;
         this.createHintCounter();
         this.createDifficultyText();
         this.input.keyboard.on('keydown', (event) => {
@@ -422,19 +422,14 @@ export class SudokuScene extends Phaser.Scene {
         while (hintCellValue) {
             row = Math.floor(Math.random() * 9);
             col = Math.floor(Math.random() * 9);
-            console.log(this.board)
-            console.log(row)
-            console.log(col)
-            console.log(this.board[row][col]);
-            console.log(this.board[row][col].value);
-
             hintCellValue = this.board[row][col].value;
         }
 
         const correctValue = this.solution[row][col].value;
         this.board[row][col].value = correctValue;
-        
+        this.removeAutomaticallyNotesFromBoard(row, col, correctValue);
         this.availableHints--;
+        this.puzzle.hintsUsed++;
         this.updateHintCounter();
         
         this.playHintAnimation(row, col);
@@ -442,12 +437,13 @@ export class SudokuScene extends Phaser.Scene {
         this.updateGrid();
         this.highlightSelection(row, col);
         
+        if (this.authService.isLoggedIn()) {
+            this.saveSudoku();
+        }
+
         if (this.checkIfCompleted()) {
             this.puzzle.solved = true;
             this.showCompletionPopup();
-            if (this.authService.isLoggedIn()) {
-                this.saveSudoku();
-            }
         }
     }
 
@@ -546,16 +542,7 @@ export class SudokuScene extends Phaser.Scene {
                 if (this.solution[row][col].value === number) {
                     this.board[row][col].value = number;
 
-                    // Automatically remove notes from the number in same Row, Col, Square if number was correct
-                    this.board.forEach((currentRow, currentRowIndex) => {
-                        currentRow.forEach((currentCell, currentColIndex) => {
-                            const sameSquare = Math.floor(row / 3) === Math.floor(currentRowIndex / 3) && Math.floor(col / 3) === Math.floor(currentColIndex / 3)
-                            const noteIndex = currentCell.notes.indexOf(number);
-                            if ((row === currentRowIndex || col == currentColIndex || sameSquare) && noteIndex != -1) {
-                                currentCell.notes.splice(noteIndex, 1);    
-                            }
-                        });
-                    })
+                    this.removeAutomaticallyNotesFromBoard(row, col, number);
 
                     // Check if the board contains 9 of the numbers
                     const count = this.board.flat().filter(cell => cell.value === number).length;   
@@ -601,9 +588,20 @@ export class SudokuScene extends Phaser.Scene {
 
     }
 
+    removeAutomaticallyNotesFromBoard(row, col, number){
+        this.board.forEach((currentRow, currentRowIndex) => {
+            currentRow.forEach((currentCell, currentColIndex) => {
+                const sameSquare = Math.floor(row / 3) === Math.floor(currentRowIndex / 3) && Math.floor(col / 3) === Math.floor(currentColIndex / 3)
+                const noteIndex = currentCell.notes.indexOf(number);
+                if ((row === currentRowIndex || col == currentColIndex || sameSquare) && noteIndex != -1) {
+                    currentCell.notes.splice(noteIndex, 1);    
+                }
+            });
+        })
+    }
+
     eraseCell() {
         if (!this.selectedCell) {
-            console.log('no cell selected');
             return
         }
         const { row, col } = this.selectedCell;
@@ -754,7 +752,6 @@ export class SudokuScene extends Phaser.Scene {
             btn.text.setColor('#888');
             btn.bg.clear();
             btn.bg.fillStyle(0xcccccc, 1);
-            console.log('deactivating button', number)
     
             btn.bg.lineStyle(2, this.hoverColor);
             btn.bg.fillRoundedRect(-this.cellSize / 2, -this.cellSize / 2, this.cellSize, this.cellSize, 10);
@@ -891,6 +888,7 @@ export class SudokuScene extends Phaser.Scene {
         }
         
         if (this.errorText) this.errorText.destroy();
+        if (this.hintText) this.hintText.destroy();
         if (this.timer) this.timer.destroy();
         if (this.diffucultyText) this.diffucultyText.destroy();
         
