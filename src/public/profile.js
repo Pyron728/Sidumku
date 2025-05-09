@@ -3,6 +3,10 @@ import { ApiService } from "./services/api.service.js";
 const username = localStorage.getItem("username") || "undefined";
 document.getElementById("username").textContent = username;
 
+if (localStorage.getItem("username") == null) {
+    window.location.href = '/';
+}
+
 async function fetchAndDisplayProfile() {
     const apiService = new ApiService();
     let sudokus = await apiService.getAllSudokus(
