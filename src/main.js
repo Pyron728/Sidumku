@@ -5,6 +5,7 @@ import {PausedGames} from "./public/scenes/PausedGames.js";
 
 const config = {
     type: Phaser.AUTO,
+    backgroundColor: '#FFFAED',
     width: 1280,
     height: 720, 
     resolution: 2,
