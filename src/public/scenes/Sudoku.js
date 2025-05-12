@@ -3,6 +3,7 @@ import { ApiService } from '../services/api.service.js';
 import {AuthService} from "../services/auth.service.js";
 
 export class SudokuScene extends Phaser.Scene {
+    data;
     constructor() {
         super({ key: 'SudokuScene' });
         this.board = [];
@@ -35,8 +36,21 @@ export class SudokuScene extends Phaser.Scene {
     }
 
     init(data) {
-        this.difficulty = data.difficulty; 
+        if (data.loadedGame) {
+            this.puzzle = data.loadedGame;
+            this.board = this.puzzle.currentBoard;
+            this.solution = this.puzzle.solvedBoard;
+            this.difficulty = this.puzzle.difficulty;
+            this.availableHints = 3 - (this.puzzle.hintsUsed || 0);
+        } else {
+            this.difficulty = data.difficulty;
+            this.puzzle = generateSudoku(this.difficulty);
+            this.board = this.puzzle.currentBoard;
+            this.solution = this.puzzle.solvedBoard;
+            this.availableHints = 3;
+        }
     }
+
 
     preload() {
         // preload für Bilddaten und so shit
@@ -52,17 +66,26 @@ export class SudokuScene extends Phaser.Scene {
         this.cameras.main.setBackgroundColor(this.basicBackgroundColor);
 
         this.apiService = new ApiService();
-        this.puzzle = generateSudoku(this.difficulty);
-        this.board = this.puzzle.currentBoard;
-        this.solution = this.puzzle.solvedBoard;
+        this.authService = new AuthService();
+
+        this.puzzle.timeSpent = this.puzzle.timeSpent ?? 0;
+        this.puzzle.mistakes = this.puzzle.mistakes ?? 0;
+        this.puzzle.hintsUsed = this.puzzle.hintsUsed ?? 0;
+        this.availableHints = 3 - this.puzzle.hintsUsed;
+
+        if (!this.puzzle._id || this.puzzle._id.startsWith('sudoku_')) {
+            this.createSudokuInDb(this.puzzle);
+        }
+
         this.createGrid();
         this.createUI();
+        this.createPauseButton();
         this.createTimer();
-        this.authService = new AuthService();
         this.createErrorCounter();
-        this.availableHints = 3 - this.puzzle.hintsUsed;
         this.createHintCounter();
         this.createDifficultyText();
+        this.updateMistakeCounter();
+        this.updateHintCounter();
         this.input.keyboard.on('keydown', (event) => {
             if (this.selectedCell) {
                 const { row, col } = this.selectedCell; 
@@ -92,8 +115,6 @@ export class SudokuScene extends Phaser.Scene {
                 }
             }
         });
-        this.createSudokuInDb(this.puzzle);
-        this.createPauseButton();
     }
 
     createGrid() {

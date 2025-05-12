@@ -62,4 +62,21 @@ export class ApiService {
   async deleteSudoku(sudokuId) {
     return await this.apiRequest(`sudoku/${sudokuId}`, undefined, 'DELETE');
   }
+
+  async getSudokusForUser(playerId) {
+    const res = await fetch(`/api/sudoku/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Basic ' + btoa(localStorage.getItem('username') + ':' + localStorage.getItem('password'))
+      }
+    });
+
+    if (!res.ok) {
+      console.error('Failed to load user sudokus');
+      return [];
+    }
+
+    return await res.json();
+  }
+
 }

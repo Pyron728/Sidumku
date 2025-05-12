@@ -46,7 +46,7 @@ export class MainMenuScene extends Phaser.Scene {
         ];
 
         if (authService.isLoggedIn()) {
-            buttons.push({ label: 'Paused Games' });
+            buttons.push({ label: 'Paused Games', scene: 'PausedGames' });
         } 
 
         const buttonHeight = 60;
