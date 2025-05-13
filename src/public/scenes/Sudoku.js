@@ -78,6 +78,7 @@ export class SudokuScene extends Phaser.Scene {
         }
 
         this.createGrid();
+        this.updateGrid();
         this.createUI();
         this.createPauseButton();
         this.createTimer();

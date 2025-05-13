@@ -5,7 +5,7 @@ class DifficultyScene extends Phaser.Scene {
         
         // Configurable colors
         this.colors = {
-            background: 0xFFF8ED,      // Light cream background
+            background: 0xFFFAED,      // Light cream background
             buttonFill: 0xFEEAC9,      // Light beige button fill
             buttonBorder: 0xE5C99F,    // Darker beige button border
             textColor: '#15313B',      // Dark navy text
@@ -38,9 +38,8 @@ class DifficultyScene extends Phaser.Scene {
         
         // Add title text
         const titleText = this.add.text(centerX, centerY - 150, 'Select a difficulty', {
-            fontFamily: 'Arial',
-            fontSize: '48px',
             fontFamily: 'Nunito',
+            fontSize: '48px',
             color: this.colors.titleColor,
         }).setOrigin(0.5);
         
@@ -87,9 +86,8 @@ class DifficultyScene extends Phaser.Scene {
         
         // Add button text
         const buttonText = this.add.text(0, 0, text, {
-            fontFamily: 'Arial',
-            fontSize: `${this.buttonConfig.fontSize}px`,
             fontFamily: 'Nunito',
+            fontSize: `${this.buttonConfig.fontSize}px`,
             color: this.colors.textColor
         }).setOrigin(0.5);
         
