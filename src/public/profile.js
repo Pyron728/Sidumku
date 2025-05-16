@@ -33,7 +33,6 @@ async function fetchAndDisplayProfile() {
         const div = document.createElement("div");
         div.textContent = `${level}: ${count}`;
         div.style.fontWeight = "600";
-        div.style.color = "var(--accent-color)";
         container.appendChild(div);
     }
 }
